@@ -1,0 +1,42 @@
+# CDX environment variables & helper functions
+# --IMPORTANT-> this needs to remain bash & zsh compatible <-IMPORTANT--
+    
+# the directory path where this file is being source'd (per BASH_SOURCE, else zsh %x)
+cdx_env_tools="$( cd "$(dirname "${BASH_SOURCE[0]:-${(%):-%x}}" )" && pwd )"
+
+export CDX_PROJECTS="$( cd "${cdx_env_tools}/.." && pwd )"
+unset cdx_env_tools
+
+export CDX_CONFIGS=${CDX_PROJECTS}/cdx-configs
+export CDX_DATA=${CDX_PROJECTS}/cdx-data
+export CDX_STORAGE=${CDX_PROJECTS}/cdx-storage
+
+# mvn options
+export MOPTS="-Denv=local -Dcdx_props_key=fv-@%wejGEN#H4Pk -Dcdx_configs=${CDX_CONFIGS}"
+
+# Wiremock
+export WM_URL=http://localhost:8680
+
+# strip and re-add cdx-env-tools/bin
+PATH="$(echo "${PATH}" | sed -e 's|:[^:]*/cdx-env-tools/bin||g'):${CDX_PROJECTS}/cdx-env-tools/bin"
+
+# list CDX-related shell variables & PATH entries
+envs() {
+    set | egrep '^(CDX_|WM_|MULE_|MOPTS|JAVA_)' | sort
+    echo -n 'PATH='
+    egrep '[^:]*(cdx|mule|java|maven)[^:]*' --color <<<"${PATH}" || echo ${PATH}
+}
+
+# --------------------------------------------------
+# other helpers
+
+for rc in ${CDX_PROJECTS}/cdx-env-tools/cdxrc-*; do
+  source ${rc}
+done
+
+# --------------------------------------------------
+# local customization
+
+if [[ -e ${CDX_PROJECTS}/.cdxrc ]]; then
+  source ${CDX_PROJECTS}/.cdxrc
+fi

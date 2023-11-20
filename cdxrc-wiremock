@@ -1,0 +1,15 @@
+# WiremMock helpers
+# IMPORTANT - this needs to remain bash & zsh compatible
+
+# show cdx-data current branch
+wms() (
+    set -ex
+    cd ${CDX_DATA}
+    git status
+)
+
+# reset WireMock, causing it to reload the mappings
+wmre() (
+    set -ex
+    curl -X POST "${WM_URL}/__admin/reset"
+)
