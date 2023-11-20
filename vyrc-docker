@@ -1,0 +1,20 @@
+# Docker (RC - Run Commands (Helpers))
+# IMPORTANT - this needs to remain bash & zsh compatible
+
+# NOTE - When running docker-compose, some services will copy data, volumes
+# back to the environment, folder they are being run in. E.g. a database
+# may write to /data and you need to be aware that deleting this folder or
+# running the docker-compose in another folder or location will not return
+# any data you may have saved.
+
+# Run all docker-compose commands inside the vytools/docker/ directory for
+# safety and persistence of experience. Never run docker-compose in your
+# project or repo-protected folders.
+
+# (cd'ing to the docker/ directory simplifies everything)
+
+dc() (
+    set -x
+    cd "${VY_PROJECTS}/vytools/docker"
+    docker-compose "$@"
+)

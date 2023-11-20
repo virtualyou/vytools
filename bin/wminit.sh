@@ -17,7 +17,7 @@ unalias cp    2> /dev/null
 unalias rm    2> /dev/null
 unalias mkdir 2> /dev/null
 
-# these should be defined in .cdxrc, which is sourced by .bashrc or .zshrc
+# these should be defined in .vyrc, which is sourced by .bashrc or .zshrc
 [[ -z ${WMROOT} ]]      && { echo "Cannot continue, WMROOT is not defined."      >&2; exit 1; }
 [[ -z ${CDX_CONFIGS} ]] && { echo "Cannot continue, CDX_CONFIGS is not defined." >&2; exit 1; }
 

@@ -1,4 +1,4 @@
-# WiremMock helpers
+# WiremMock (RC - Run Commands (Helpers))
 # IMPORTANT - this needs to remain bash & zsh compatible
 
 # show cdx-data current branch

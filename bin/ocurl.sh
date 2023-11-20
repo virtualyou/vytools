@@ -8,11 +8,11 @@ unalias curl 2> /dev/null
 unalias cut  2> /dev/null
 unalias jq   2> /dev/null
 
-# cred defaults (expression evaluation via : no-op command) - to override, do export in your .cdxrc
+# cred defaults (expression evaluation via : no-op command) - to override, do export in your .vyrc
 : ${OAUTH_CLIENT:=admin}
 : ${OAUTH_SECRET:=oauthAdmin123}
 
-# initialized in cdx-env-tools/cdxrc, can be customized in your .cdxrc
+# initialized in cdx-env-tools/vyrc, can be customized in your .vyrc
 #if [[ -z "${OAUTH_CLIENT}" || -z "${OAUTH_SECRET}" ]]; then
 #    echo "Required variable(s) OAUTH_CLIENT and/or OAUTH_SECRET not set." >&2
 #    exit 1

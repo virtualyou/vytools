@@ -35,10 +35,8 @@ shift 1
 
 ( set ${onError}
 
-  envcheck.sh ${env} oauth -h
+  envcheck.sh ${env} prod -h
 
-  envcheck.sh ${env} advana   -h
-  envcheck.sh ${env} sabrscb  -h
-  envcheck.sh ${env} smarts   -h
-  envcheck.sh ${env} smartslh -h
+#  envcheck.sh ${env} financial-apis -h
+#  envcheck.sh ${env} medical-apis   -h
 )

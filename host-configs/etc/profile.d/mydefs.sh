@@ -1,9 +1,11 @@
 # vars
 
 # MacOS
-export EDITOR='sublime_text'
+#export EDITOR='sublime_text'
+#export HISTTIMEFORMAT="%d/%m/%y %T "
 
-export HISTTIMEFORMAT="%d/%m/%y %T "
+# WSL - Windows System Linux (Ubuntu 22.04)
+export EDITOR='sublime_text'
 
 # aliases
 

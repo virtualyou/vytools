@@ -1,4 +1,6 @@
-# CDX environment variables & helper functions
+# VY - VirtualYou (RC - Run Commands (Helpers))
+
+# environment variables & helper functions
 # --IMPORTANT-> this needs to remain bash & zsh compatible <-IMPORTANT--
     
 # the directory path where this file is being source'd (per BASH_SOURCE, else zsh %x)

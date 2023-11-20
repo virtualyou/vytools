@@ -1,4 +1,6 @@
 #!/bin/bash
+# Author: Chris Noe
+# Modifications: David L Whitehurst
 # This script provides generalized functionality for doing this, (see _iterate()):
 #   for dir in */; do
 #       ( cd $dir; some-command(s); )

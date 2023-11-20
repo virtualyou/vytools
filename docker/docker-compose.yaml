@@ -1,4 +1,4 @@
-# These service definitions depend on $CDX_ vars as defined by cdx-env-tools/cdxrc
+# These service definitions depend on $CDX_ vars as defined by cdx-env-tools/vyrc
 
 version: '3.2'
 services:

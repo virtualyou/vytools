@@ -41,7 +41,7 @@ esac
 
 # --------------------------------------------------
 
-# this should be defined in .cdxrc, which is sourced by .bashrc or .zshrc
+# this should be defined in .vyrc, which is sourced by .bashrc or .zshrc
 [[ -z ${CDX_CONFIGS} ]] && { echo "Cannot continue, CDX_CONFIGS is not defined." >&2; exit 1; }
 
 source ${CDX_PROJECTS}/cdx-env-tools/bin/tls_func.sh

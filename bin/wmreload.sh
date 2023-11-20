@@ -25,7 +25,7 @@ apifamily=$1
 
 [[ -z ${apifamily} ]] && { echo "api-family argument not specified." >&2; exit 1; }
 
-# these are defined in .cdxrc, which should be sourced by .bashrc or .zshrc
+# these are defined in .vyrc, which should be sourced by .bashrc or .zshrc
 [[ -z ${WMROOT} ]]       && { echo "Cannot continue, WMROOT is not defined."       >&2; exit 1; }
 [[ -z ${CDX_PROJECTS} ]] && { echo "Cannot continue, CDX_PROJECTS is not defined." >&2; exit 1; }
 
