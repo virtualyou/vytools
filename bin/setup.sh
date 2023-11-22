@@ -14,22 +14,17 @@ Usage:
 
 Options:
     --shell     Initialize shell environment variables (bash only)
-    --compose   Get docker-compose and setup in isolation
     --utils     Clone the VirtualYou utilities
-    --nodejs    Install NVM, nodejs and set version based on vyrc
-    --curl      Initialize .curlrc, (mTLS settings)
+    --compose   Get docker-compose and setup in isolation
     --apis      Clone the api repos
     --app       Clone the current UI application
-    --api-pkg   Clone, build, and package
-    --ui-pkg    Clone, build, and package
-    --pushall   Push all tagged images
 ENDHELP
     exit
 fi
 ################################################################################
 
 BASH_DIR="$( cd "$(dirname "${BASH_SOURCE[0]}" )" && pwd )"
-VY_PROJECTS=$( cd ${BASH_DIR}/../../virtualyou && pwd )
+VY_PROJECTS=$( cd ${BASH_DIR}/../.. && pwd )
 
 # ignore any command customizations
 unalias cat  2> /dev/null
@@ -47,8 +42,6 @@ while [[ $# > 0 && "${1}" =~ ^-- ]]; do
         --shell)    initShell=true;     noAction=false; shift 1 ;;
         --utils)    cloneUtils=true;     noAction=false; shift 1 ;;
         --compose)  initCompose=true;   noAction=false; shift 1 ;;
-        --nodejs)   initNodeJS=true;    noAction=false; shift 1 ;;
-        --curl)     initCurl=true;      noAction=false; shift 1 ;;
         --apis)     cloneApis=true;     noAction=false; shift 1 ;;
         --app)      cloneApp=true;      noAction=false; shift 1 ;;
             *) echo "Unrecognized option: ${1}" >&2; exit 1 ;;
@@ -62,11 +55,12 @@ fi
 
 # --------------------------------------------------
 # shell setup
+echo $VY_PROJECTS
 
 if [[ ${initShell} == true ]]; then
     if [[ -e ~/.bashrc ]]; then
         echo "Adding vytools/vyrc to ~/.bashrc"
-        sed_i -e '/vyrc/d' ~/.bashrc
+        sed -i '/vyrc/d' ~/.bashrc
         echo "source ${VY_PROJECTS}/vytools/vyrc" >> ~/.bashrc
     fi
 fi
@@ -85,37 +79,10 @@ if [[ ${initCompose} == true ]]; then
 fi
 
 # --------------------------------------------------
-# NodeJS setup
-
-if [[ ${initNodeJS} == true ]]; then
-    echo "This is pending implementation."
-fi
-
-# --------------------------------------------------
-# curl setup
-
-if [[ ${initCurl} == true ]]; then
-    if [[ -z ${VY_CONFIGS} ]]; then
-        echo "Cannot continue, VY_CONFIGS is not defined." >&2
-        exit 1
-    fi
-    source ${VY_CONFIGS}/.pkirc
-    echo Populating ~/.curlrc
-    cat > ~/.curlrc <<EOF
-# mTLS keystores
---cacert ${VY_CONFIGS}/pki/cdx_cacerts.pem
---cert   ${VY_CONFIGS}/pki/cdx_keystore.pem:${CDX_KEYSTORE_PASS}
-EOF
-fi
-
-# --------------------------------------------------
 # repo cloning
 
 if [[ ${cloneUtils} == true ]]; then
-    if [[ -z ${NODE_VERSION} ]]; then
-        echo "Cannot continue, NODE_VERSION is not defined." >&2
-        exit 1
-    fi
+    cd $VY_PROJECTS
     ( set -ex
       git clone -b main     git@github.com:dlwhitehurst/vymain.git
       git clone -b main     git@github.com:dlwhitehurst/vyconfigs.git
@@ -124,10 +91,7 @@ if [[ ${cloneUtils} == true ]]; then
 fi
 
 if [[ ${cloneApis} == true ]]; then
-    if [[ -z ${NODE_VERSION} ]]; then
-        echo "Cannot continue, NODE_VERSION is not defined." >&2
-        exit 1
-    fi
+    cd $VY_PROJECTS
     ( set -ex
       git clone -b main     git@github.com:dlwhitehurst/userauth.git
       git clone -b main     git@github.com:dlwhitehurst/personal.git
@@ -138,11 +102,9 @@ if [[ ${cloneApis} == true ]]; then
     )
 fi
 if [[ ${cloneApp} == true ]]; then
-    if [[ -z ${NODE_VERSION} ]]; then
-        echo "Cannot continue, NODE_VERSION is not defined." >&2
-        exit 1
-    fi
+    cd $VY_PROJECTS
     ( set -ex
       git clone -b main git@github.com:dlwhitehurst/vite-mvp.git
     )
 fi
+

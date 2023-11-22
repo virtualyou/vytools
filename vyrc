@@ -6,11 +6,7 @@
 
 # VirtualYou Run Commands
 
-vytoolsbin="$( cd "$(dirname "${BASH_SOURCE[0]}" )" && pwd )"
-vytools="$( cd "${vytoolsbin}/.." && pwd )"
-export VY_PROJECTS="$( cd "${vytools}/.." && pwd )"
-unset vytools
-unset vytoolsbin
+export VY_PROJECTS="/home/david/development/virtualyou"
 
 # IMPORTANT -> because these are exported with .bashrc meaning
 # each terminal session has needed ENV
@@ -20,10 +16,9 @@ export VY_DATA=${VY_PROJECTS}/vydata
 
 # --------------------------------------------------
 # other helpers
+source ${VY_PROJECTS}/vytools/vyrc-sensitive
+source ${VY_PROJECTS}/vytools/vyrc-docker
 
-for rc in ${VY_PROJECTS}/vytools/vyrc-*; do
-  source ${rc}
-done
 
 # --------------------------------------------------
 # local customization

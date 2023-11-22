@@ -1,5 +1,4 @@
-# Docker (RC - Run Commands (Helpers))
-# IMPORTANT - this needs to remain bash & zsh compatible
+# Docker Run Commands
 
 # NOTE - When running docker-compose, some services will copy data, volumes
 # back to the environment, folder they are being run in. E.g. a database
@@ -15,6 +14,6 @@
 
 dc() (
     set -x
-    cd "${VY_PROJECTS}/vytools/docker"
+    cd "${VY_PROJECTS}/docker"
     docker-compose "$@"
 )
