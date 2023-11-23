@@ -42,10 +42,10 @@ noAction=true
 
 while [[ $# > 0 && "${1}" =~ ^-- ]]; do
     case "${1}" in
-        --dclean)   dockerClean=true;   noAction=false; shift 1 ;;
-        --pkg)      packageApis=true;      noAction=false; shift 1 ;;
-        --app-pkg)  packageApp=true;   noAction=false; shift 1 ;;
-        --test)     testScript=true;    noAction=false; shift 1 ;;
+        --dclean)   dockerClean=true;     noAction=false; shift 1 ;;
+        --pkg)      packageApis=true;     noAction=false; shift 1 ;;
+        --app-pkg)  packageApp=true;      noAction=false; shift 1 ;;
+        --test)     testScript=true;      noAction=false; shift 1 ;;
         *) echo "Unrecognized option:         ${1}" >&2; exit 1 ;;
     esac
 done
@@ -122,3 +122,4 @@ if [[ ${packageApp} == true ]]; then
   echo $BUILD_VERSION
   echo "This is under construction."
 fi
+
