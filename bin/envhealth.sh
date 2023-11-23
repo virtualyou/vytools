@@ -57,14 +57,31 @@ _curl_GET() {
         echo "HTTP status code: $httpCode"
         cat ${responseFile}
         echo
+    else
+      cat ${responseFile} | jq '.'
     fi
     rm -f ${responseFile}
 }
 
 echo "------------------------------------------------------------"
 echo "Userauth API"
-_curl_GET "https://userauth.${ENV_HOST}/"
+_curl_GET "http://${ENV_HOST}:3001/"
 
+echo "------------------------------------------------------------"
+echo "Personal API"
+_curl_GET "http://${ENV_HOST}:3002/"
+
+echo "------------------------------------------------------------"
+echo "Medical API"
+_curl_GET "http://${ENV_HOST}:3003/"
+
+echo "------------------------------------------------------------"
+echo "Financial API"
+_curl_GET "http://${ENV_HOST}:3004/"
+
+echo "------------------------------------------------------------"
+echo "Administration API"
+_curl_GET "http://${ENV_HOST}:3005/"
 
 if [[ $((CURL_ERROR_COUNT + HTTP_ERROR_COUNT)) > 0 ]]; then
     echo
