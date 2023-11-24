@@ -1,19 +1,23 @@
 #!/bin/bash
-# Author: Chris Noe
-# Modifications: David L Whitehurst
+###################################################################
+# Copyright (c) 2023 David L. Whitehurst
+# License: https://github.com/dlwhitehurst/vytools/blob/main/LICENSE
+#
 # This script provides generalized functionality for doing this, (see _iterate()):
 #   for dir in */; do
 #       ( cd $dir; some-command(s); )
 #   done
 #
 # The options provide convenient control of execution and output formatting.
-
+#
+# Author: Chris Noe
+#
 ################################################################################
 if [[ "$1" == "--help" ]]; then
     cat <<'ENDHELP'
 Usage:
   cd <parent-directory>
-  PATH+=:$PWD/cdx-env-tools/bin
+  PATH+=:$PWD/vytools/bin
   iter.sh [options] <command-line>
     OR
   iter.sh [options] <<'CMDS'

@@ -1,4 +1,13 @@
 #!/bin/bash
+###################################################################
+# Copyright (c) 2023 David L. Whitehurst
+# License: https://github.com/dlwhitehurst/vytools/blob/main/LICENSE
+#
+# This script provides indication of environment health.
+#
+# Author: Chris Noe
+# Edited: David L Whitehurst
+#
 ################################################################################
 if [[ "$1" == "--help" ]]; then
     cat <<'ENDHELP'
@@ -8,7 +17,7 @@ Examples:
   envhealth.sh
   envhealth.sh local
 
-Perform a health check on each VY API.
+Perform a health check on each VirtualYou API.
 For non-200 responses, report the http-code and show the response content.
 
 ENDHELP

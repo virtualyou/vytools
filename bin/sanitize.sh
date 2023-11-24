@@ -1,8 +1,15 @@
 #!/bin/bash
+###################################################################
+# Copyright (c) 2023 David L. Whitehurst
+# License: https://github.com/dlwhitehurst/vytools/blob/main/LICENSE
+#
+#
+# UNDER CONSTRUCTION
+#
 # sanitize.sh
 ########################################################################
 # Do a series of quality sanitization code fixes prior to pushing 
-# Mule projects
+# VirtualYou projects
 #
 # Usage
 #   sanitize.sh [options]

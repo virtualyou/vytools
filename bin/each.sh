@@ -1,13 +1,20 @@
 #!/bin/bash
+###################################################################
+# Copyright (c) 2023 David L. Whitehurst
+# License: https://github.com/dlwhitehurst/vytools/blob/main/LICENSE
+#
 # This script provides generalized functionality for doing this:
 #   for dir in ${ITER_SET[@]}; do
 #       ( cd $dir; some-command(s); )
 #   done
-# Where ITER_SET is configured by each.env, which can be customized for your project-specific directories.
-# The options provide convenient control of execution, output formatting and ITER_SET subsetting.
-# This script extends iter.sh, which is expected to be co-located.
-# It sources each.env, which is also expected to be co-located.
-
+# Where ITER_SET is configured by each.env, which can be customized for your
+# project-specific directories.The options provide convenient control of
+# execution, output formatting and ITER_SET subsetting. This script extends
+# iter.sh, which is expected to be co-located. It sources each.env, which is
+# also expected to be co-located.
+#
+# Author: Chris Noe
+#
 ################################################################################
 if [[ "$1" == "--help" ]]; then
     cat <<'ENDHELP'

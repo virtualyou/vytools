@@ -1,7 +1,13 @@
 #!/bin/bash
-# A VirtualYou project tool utility
-
-################################################################################
+###################################################################
+# Copyright (c) 2023 David L. Whitehurst
+# License: https://github.com/dlwhitehurst/vytools/blob/main/LICENSE
+#
+# This script helps with docker builds and pushes
+#
+# Author: David L Whitehurst
+#
+###############################################################################
 if [[ "$1" == "--help" ]]; then
     cat <<'ENDHELP'
 Welcome to the VirtualYou Tool utility.
@@ -12,10 +18,10 @@ Usage:
 
 Options:
     --dclean    Clean all containers then all images (w/prompts)
-    --pkg       Build and package APIs
-    --app-pkg   Build and package UI application
+    --pkg-api   Build and package APIs
+    --pkg-app   Build and package UI application
     --test      Test script sandbox
-    --ui-pkg    Build and package
+    --push-api  Push API images
     --push-all  Push all tagged images
 ENDHELP
     exit
@@ -43,7 +49,8 @@ noAction=true
 while [[ $# > 0 && "${1}" =~ ^-- ]]; do
     case "${1}" in
         --dclean)   dockerClean=true;     noAction=false; shift 1 ;;
-        --pkg)      packageApis=true;     noAction=false; shift 1 ;;
+        --pkg-api)  packageApis=true;     noAction=false; shift 1 ;;
+        --push-api) pushApis=true;        noAction=false; shift 1 ;;
         --app-pkg)  packageApp=true;      noAction=false; shift 1 ;;
         --test)     testScript=true;      noAction=false; shift 1 ;;
         *) echo "Unrecognized option:         ${1}" >&2; exit 1 ;;
@@ -98,15 +105,34 @@ if [[ ${packageApis} == true ]]; then
   cd $VY_PROJECTS
   ( set -ex
     cd userauth
-    docker build -t dlwhitehurst/userauth:$BUILD_VERSION .
+    docker build -t docker.virtualyou.info/userauth:$BUILD_VERSION .
     cd ../personal
-    docker build -t dlwhitehurst/personal:$BUILD_VERSION .
+    docker build -t docker.virtualyou.info/personal:$BUILD_VERSION .
     cd ../medical
-    docker build -t dlwhitehurst/medical:$BUILD_VERSION .
+    docker build -t docker.virtualyou.info/medical:$BUILD_VERSION .
     cd ../financial
-    docker build -t dlwhitehurst/financial:$BUILD_VERSION .
+    docker build -t docker.virtualyou.info/financial:$BUILD_VERSION .
     cd ../administration
-    docker build -t dlwhitehurst/administration:$BUILD_VERSION .
+    docker build -t docker.virtualyou.info/administration:$BUILD_VERSION .
+  )
+fi
+
+if [[ ${pushApis} == true ]]; then
+
+#  BUILD_VERSION=0.1.0
+
+  cd $VY_PROJECTS
+  ( set -ex
+    cd userauth
+    docker push docker.virtualyou.info/userauth:$BUILD_VERSION
+    cd ../personal
+    docker push docker.virtualyou.info/personal:$BUILD_VERSION
+    cd ../medical
+    docker push docker.virtualyou.info/medical:$BUILD_VERSION
+    cd ../financial
+    docker push docker.virtualyou.info/financial:$BUILD_VERSION
+    cd ../administration
+    docker push docker.virtualyou.info/administration:$BUILD_VERSION
   )
 fi
 

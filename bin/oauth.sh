@@ -1,4 +1,13 @@
 #!/bin/bash
+###################################################################
+# Copyright (c) 2023 David L. Whitehurst
+# License: https://github.com/dlwhitehurst/vytools/blob/main/LICENSE
+#
+#
+# UNDER CONSTRUCTION
+#
+# oauth.sh
+#
 # Obtain an OAuth token, then execute the given curl command along with Authorization header.
 # The token is not reused, a new token is obtained each time.
 # Assumes jq is available on the PATH.
@@ -12,7 +21,7 @@ unalias jq   2> /dev/null
 : ${OAUTH_CLIENT:=admin}
 : ${OAUTH_SECRET:=oauthAdmin123}
 
-# initialized in cdx-env-tools/vyrc, can be customized in your .vyrc
+# initialized in vytools/vyrc, can be customized in your .vyrc
 #if [[ -z "${OAUTH_CLIENT}" || -z "${OAUTH_SECRET}" ]]; then
 #    echo "Required variable(s) OAUTH_CLIENT and/or OAUTH_SECRET not set." >&2
 #    exit 1

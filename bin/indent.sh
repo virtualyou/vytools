@@ -1,6 +1,12 @@
 #!/bin/bash
+###################################################################
+# Copyright (c) 2023 David L. Whitehurst
+# License: https://github.com/dlwhitehurst/vytools/blob/main/LICENSE
+#
 # This script is a front-end for expand/unexpand.
-
+#
+# Author: Chris Noe
+#
 ################################################################################
 if [[ "$1" == "--help" ]]; then
     cat <<'ENDHELP'
@@ -12,7 +18,7 @@ Options:
   -x   show execution of commands that modify files
 
 This script is a front-end for the expand/unexpand utilities.
-It applies project standards to CDX-specific project files.
+It applies project standards to VY-specific project files.
 Works correctly even if an input file contains a mix of both tabs & spaces.
 
 Note - this does NOT perform syntax-driven re-formatting, (eg, xml pretty printing).

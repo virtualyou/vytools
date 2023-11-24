@@ -16,7 +16,6 @@ export VY_DATA=${VY_PROJECTS}/vydata
 
 # --------------------------------------------------
 # other helpers
-source ${VY_PROJECTS}/vytools/vyrc-sensitive
 source ${VY_PROJECTS}/vytools/vyrc-docker
 
 

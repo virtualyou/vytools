@@ -1,6 +1,10 @@
 #!/bin/bash
+###################################################################
+# Copyright (c) 2023 David L. Whitehurst
+# License: https://github.com/dlwhitehurst/vytools/blob/main/LICENSE
+#
 # Setup a VirtualYou dev environment from scratch.
-
+#
 ################################################################################
 if [[ "$1" == "--help" ]]; then
     cat <<'ENDHELP'
