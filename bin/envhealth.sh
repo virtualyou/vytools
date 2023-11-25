@@ -16,6 +16,7 @@ Usage:
 Examples:
   envhealth.sh
   envhealth.sh local
+  envhealth.sh prod
 
 Perform a health check on each VirtualYou API.
 For non-200 responses, report the http-code and show the response content.
@@ -37,8 +38,8 @@ env="${1:-local}"
 shift 1
 
 case "${env}" in
-    local)  ENV_HOST=localhost ;;
-    prod)   ENV_HOST=virtualyou.info ;;
+    local)  localENV=true; LOCAL_HOST=localhost ;;
+    prod)   prodENV=true; PROD_HOST=virtualyou.info ;;
       *)    echo "Unrecognized env: ${env}"; exit 1 ;;
 esac
 
@@ -72,32 +73,67 @@ _curl_GET() {
     rm -f ${responseFile}
 }
 
-echo "------------------------------------------------------------"
-echo "Userauth API"
-_curl_GET "http://${ENV_HOST}:3001/"
+if [[ ${localENV} == true ]]; then
+  echo "------------------------------------------------------------"
+  echo "Userauth API"
+  _curl_GET "http://${LOCAL_HOST}:3001/"
 
-echo "------------------------------------------------------------"
-echo "Personal API"
-_curl_GET "http://${ENV_HOST}:3002/"
+  echo "------------------------------------------------------------"
+  echo "Personal API"
+  _curl_GET "http://${LOCAL_HOST}:3002/"
 
-echo "------------------------------------------------------------"
-echo "Medical API"
-_curl_GET "http://${ENV_HOST}:3003/"
+  echo "------------------------------------------------------------"
+  echo "Medical API"
+  _curl_GET "http://${LOCAL_HOST}:3003/"
 
-echo "------------------------------------------------------------"
-echo "Financial API"
-_curl_GET "http://${ENV_HOST}:3004/"
+  echo "------------------------------------------------------------"
+  echo "Financial API"
+  _curl_GET "http://${LOCAL_HOST}:3004/"
 
-echo "------------------------------------------------------------"
-echo "Administration API"
-_curl_GET "http://${ENV_HOST}:3005/"
+  echo "------------------------------------------------------------"
+  echo "Administration API"
+  _curl_GET "http://${LOCAL_HOST}:3005/"
 
-if [[ $((CURL_ERROR_COUNT + HTTP_ERROR_COUNT)) > 0 ]]; then
+  if [[ $((CURL_ERROR_COUNT + HTTP_ERROR_COUNT)) > 0 ]]; then
     echo
-fi
-if [[ ${CURL_ERROR_COUNT} > 0 ]]; then
+  fi
+  if [[ ${CURL_ERROR_COUNT} > 0 ]]; then
     echo "See curl error code listing: https://man7.org/linux/man-pages/man1/curl.1.html#EXIT_CODES"
-fi
-if [[ ${HTTP_ERROR_COUNT} > 0 ]]; then
+  fi
+  if [[ ${HTTP_ERROR_COUNT} > 0 ]]; then
     echo "See HTTP code listing: https://en.wikipedia.org/wiki/List_of_HTTP_status_codes"
+  fi
 fi
+
+if [[ ${prodENV} == true ]]; then
+  echo "------------------------------------------------------------"
+  echo "Userauth API"
+  _curl_GET "https://userauth.${PROD_HOST}"
+
+  echo "------------------------------------------------------------"
+  echo "Personal API"
+  _curl_GET "https://personal.${PROD_HOST}"
+
+  echo "------------------------------------------------------------"
+  echo "Medical API"
+  _curl_GET "https://medical.${PROD_HOST}"
+
+  echo "------------------------------------------------------------"
+  echo "Financial API"
+  _curl_GET "https://financial.${PROD_HOST}"
+
+  echo "------------------------------------------------------------"
+  echo "Administration API"
+  _curl_GET "https://administration.${PROD_HOST}"
+
+  if [[ $((CURL_ERROR_COUNT + HTTP_ERROR_COUNT)) > 0 ]]; then
+    echo
+  fi
+  if [[ ${CURL_ERROR_COUNT} > 0 ]]; then
+    echo "See curl error code listing: https://man7.org/linux/man-pages/man1/curl.1.html#EXIT_CODES"
+  fi
+  if [[ ${HTTP_ERROR_COUNT} > 0 ]]; then
+    echo "See HTTP code listing: https://en.wikipedia.org/wiki/List_of_HTTP_status_codes"
+  fi
+fi
+
