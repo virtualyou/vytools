@@ -105,15 +105,15 @@ if [[ ${packageApis} == true ]]; then
   cd $VY_PROJECTS
   ( set -ex
     cd userauth
-    docker build -t docker.virtualyou.info/userauth:$BUILD_VERSION .
+    docker build -t dlwhitehurst/userauth:$BUILD_VERSION .
     cd ../personal
-    docker build -t docker.virtualyou.info/personal:$BUILD_VERSION .
+    docker build -t dlwhitehurst/personal:$BUILD_VERSION .
     cd ../medical
-    docker build -t docker.virtualyou.info/medical:$BUILD_VERSION .
+    docker build -t dlwhitehurst/medical:$BUILD_VERSION .
     cd ../financial
-    docker build -t docker.virtualyou.info/financial:$BUILD_VERSION .
+    docker build -t dlwhitehurst/financial:$BUILD_VERSION .
     cd ../administration
-    docker build -t docker.virtualyou.info/administration:$BUILD_VERSION .
+    docker build -t dlwhitehurst/administration:$BUILD_VERSION .
   )
 fi
 
@@ -124,15 +124,15 @@ if [[ ${pushApis} == true ]]; then
   cd $VY_PROJECTS
   ( set -ex
     cd userauth
-    docker push docker.virtualyou.info/userauth:$BUILD_VERSION
+    docker push dlwhitehurst/userauth:$BUILD_VERSION
     cd ../personal
-    docker push docker.virtualyou.info/personal:$BUILD_VERSION
+    docker push dlwhitehurst/personal:$BUILD_VERSION
     cd ../medical
-    docker push docker.virtualyou.info/medical:$BUILD_VERSION
+    docker push dlwhitehurst/medical:$BUILD_VERSION
     cd ../financial
-    docker push docker.virtualyou.info/financial:$BUILD_VERSION
+    docker push dlwhitehurst/financial:$BUILD_VERSION
     cd ../administration
-    docker push docker.virtualyou.info/administration:$BUILD_VERSION
+    docker push dlwhitehurst/administration:$BUILD_VERSION
   )
 fi
 
