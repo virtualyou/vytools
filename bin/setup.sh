@@ -17,11 +17,13 @@ Usage:
 
 
 Options:
-    --shell     Initialize shell environment variables (bash only)
-    --utils     Clone the VirtualYou utilities
-    --compose   Get docker-compose and setup in isolation
-    --apis      Clone the api repos
-    --app       Clone the current UI application
+    --shell       Initialize shell environment variables (bash only)
+    --utils       Clone the VirtualYou utilities
+    --compose     Get docker-compose and setup in isolation
+    --apis        Clone the api repos
+    --app         Clone the current UI application
+    --prep-local  Prepare application for local development
+    --prep-prod   Prepare application for production deployment
 ENDHELP
     exit
 fi
@@ -43,11 +45,14 @@ noAction=true
 
 while [[ $# > 0 && "${1}" =~ ^-- ]]; do
     case "${1}" in 
-        --shell)    initShell=true;     noAction=false; shift 1 ;;
-        --utils)    cloneUtils=true;     noAction=false; shift 1 ;;
-        --compose)  initCompose=true;   noAction=false; shift 1 ;;
-        --apis)     cloneApis=true;     noAction=false; shift 1 ;;
-        --app)      cloneApp=true;      noAction=false; shift 1 ;;
+        --shell)      initShell=true;     noAction=false; shift 1 ;;
+        --utils)      cloneUtils=true;     noAction=false; shift 1 ;;
+        --compose)    initCompose=true;   noAction=false; shift 1 ;;
+        --apis)       cloneApis=true;     noAction=false; shift 1 ;;
+        --app)        cloneApp=true;      noAction=false; shift 1 ;;
+        --prep-local) prepLocal=true;      noAction=false; shift 1 ;;
+        --prep-prod)  prepProd=true;      noAction=false; shift 1 ;;
+
             *) echo "Unrecognized option: ${1}" >&2; exit 1 ;;
     esac
 done
@@ -112,3 +117,57 @@ if [[ ${cloneApp} == true ]]; then
     )
 fi
 
+# --------------------------------------------------
+# prepLocal
+
+if [[ ${prepLocal} == true ]]; then
+    cd $VY_PROJECTS
+    ( set -ex
+      cd vite-mvp
+      sed -i 's/https:\/\/userauth.virtualyou.info/http:\/\/localhost:3001/' vite.config.ts
+      sed -i 's/https:\/\/personal.virtualyou.info/http:\/\/localhost:3002/' vite.config.ts
+      sed -i 's/https:\/\/medical.virtualyou.info/http:\/\/localhost:3003/' vite.config.ts
+      sed -i 's/https:\/\/financial.virtualyou.info/http:\/\/localhost:3004/' vite.config.ts
+      sed -i 's/https:\/\/administration.virtualyou.info/http:\/\/localhost:3005/' vite.config.ts
+
+      cd src/services
+      sed -i 's/https:\/\/app.virtualyou.info\/userauth\/v1\//http:\/\/localhost:3000\/userauth\/v1\//' user.service.ts
+      sed -i 's/https:\/\/app.virtualyou.info\/personal\/v1\/owner\//http:\/\/localhost:3000\/personal\/v1\/owner\//' personal.service.ts
+      sed -i 's/https:\/\/app.virtualyou.info\/medical\/v1\/owner\//http:\/\/localhost:3000\/medical\/v1\/owner\//' medical.service.ts
+      sed -i 's/https:\/\/app.virtualyou.info\/financial\/v1\/owner\//http:\/\/localhost:3000\/financial\/v1\/owner\//' financial.service.ts
+      sed -i 's/https:\/\/app.virtualyou.info\/userauth\/v1\/auth\//http:\/\/localhost:3000\/userauth\/v1\/auth\//' auth.service.ts
+      sed -i 's/https:\/\/app.virtualyou.info\/administration\/v1\/owner\//http:\/\/localhost:3000\/administration\/\/owner\//' administration.service.ts
+    )
+      echo
+      echo "      ** Do not forget to pull domain from cookie session in userauth."
+      echo "      ** This means that you need to comment userauth server.js file and build an image for Docker Hub."
+      echo "      ** docker build -t dlwhitehurst/userauth:0.1.0-dev"
+fi
+
+# --------------------------------------------------
+# prepProd
+
+if [[ ${prepProd} == true ]]; then
+    cd $VY_PROJECTS
+    ( set -ex
+      cd vite-mvp
+      sed -i 's/http:\/\/localhost:3001/https:\/\/userauth.virtualyou.info/' vite.config.ts
+      sed -i 's/http:\/\/localhost:3002/https:\/\/personal.virtualyou.info/' vite.config.ts
+      sed -i 's/http:\/\/localhost:3003/https:\/\/medical.virtualyou.info/' vite.config.ts
+      sed -i 's/http:\/\/localhost:3004/https:\/\/financial.virtualyou.info/' vite.config.ts
+      sed -i 's/http:\/\/localhost:3005/https:\/\/administration.virtualyou.info/' vite.config.ts
+
+      cd src/services
+      sed -i 's/http:\/\/localhost:3000\/userauth\/v1\//https:\/\/app.virtualyou.info\/userauth\/v1\//' user.service.ts
+      sed -i 's/http:\/\/localhost:3000\/personal\/v1\/owner\//https:\/\/app.virtualyou.info\/personal\/v1\/owner\//' personal.service.ts
+      sed -i 's/http:\/\/localhost:3000\/medical\/v1\/owner\//https:\/\/app.virtualyou.info\/medical\/v1\/owner\//' medical.service.ts
+      sed -i 's/http:\/\/localhost:3000\/financial\/v1\/owner\//https:\/\/app.virtualyou.info\/financial\/v1\/owner\//' financial.service.ts
+      sed -i 's/http:\/\/localhost:3000\/userauth\/v1\/auth\//https:\/\/app.virtualyou.info\/userauth\/v1\/auth\//' auth.service.ts
+      sed -i 's/http:\/\/localhost:3000\/administration\/v1\/owner\//https:\/\/app.virtualyou.info\/administration\/v1\/owner\//' administration.service.ts
+    )
+      echo
+      echo "      ** Do not forget to add domain to cookie session in userauth."
+      echo "      ** This means that you need to uncomment userauth server.js file and build an image for Docker Hub."
+      echo "      ** docker build -t dlwhitehurst/userauth:0.1.0"
+
+fi
