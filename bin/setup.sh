@@ -138,11 +138,14 @@ if [[ ${prepLocal} == true ]]; then
       sed -i 's/https:\/\/app.virtualyou.info\/financial\/v1\/owner\//http:\/\/localhost:3000\/financial\/v1\/owner\//' financial.service.ts
       sed -i 's/https:\/\/app.virtualyou.info\/userauth\/v1\/auth\//http:\/\/localhost:3000\/userauth\/v1\/auth\//' auth.service.ts
       sed -i 's/https:\/\/app.virtualyou.info\/administration\/v1\/owner\//http:\/\/localhost:3000\/administration\/\/owner\//' administration.service.ts
+
+      cd $VY_PROJECTS
+      cd userauth
+      sed -i 's/domain:/\/\/domain:/' server.js
     )
       echo
-      echo "      ** Do not forget to pull domain from cookie session in userauth."
-      echo "      ** This means that you need to comment userauth server.js file and build an image for Docker Hub."
-      echo "      ** docker build -t virtualyou/userauth:0.1.0-dev"
+      echo "      ****** Do not forget to build x.x.x-dev and change docker-compose, DO NOT PUSH ******"
+      echo
 fi
 
 # --------------------------------------------------
@@ -165,10 +168,15 @@ if [[ ${prepProd} == true ]]; then
       sed -i 's/http:\/\/localhost:3000\/financial\/v1\/owner\//https:\/\/app.virtualyou.info\/financial\/v1\/owner\//' financial.service.ts
       sed -i 's/http:\/\/localhost:3000\/userauth\/v1\/auth\//https:\/\/app.virtualyou.info\/userauth\/v1\/auth\//' auth.service.ts
       sed -i 's/http:\/\/localhost:3000\/administration\/v1\/owner\//https:\/\/app.virtualyou.info\/administration\/v1\/owner\//' administration.service.ts
+
+      cd $VY_PROJECTS
+      cd userauth
+      sed -i 's/\/\/domain:/domain:/' server.js
+
     )
+
       echo
-      echo "      ** Do not forget to add domain to cookie session in userauth."
-      echo "      ** This means that you need to uncomment userauth server.js file and build an image for Docker Hub."
-      echo "      ** docker build -t virtualyou/userauth:0.1.0"
+      echo "      ****** Please review carefully before any push to remote. ******"
+      echo
 
 fi
