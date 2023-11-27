@@ -1,6 +1,8 @@
 #!/bin/bash
-###################################################################
-# Copyright (c) 2023 David L. Whitehurst
+################################################################################
+# WARNING: USE AT YOUR OWN RISK, WORK IN PROGRESS, REVIEW BEFORE YOU RUN.
+#
+# Copyright (c) 2023 VirtualYou
 # License: https://github.com/virtualyou/vytools/blob/main/LICENSE
 #
 # Setup a VirtualYou dev environment from scratch.

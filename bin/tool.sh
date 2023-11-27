@@ -1,13 +1,15 @@
 #!/bin/bash
-###################################################################
-# Copyright (c) 2023 David L. Whitehurst
-# License: https://github.com/dlwhitehurst/vytools/blob/main/LICENSE
+################################################################################
+# WARNING: USE AT YOUR OWN RISK, WORK IN PROGRESS, REVIEW BEFORE YOU RUN.
+#
+# Copyright (c) 2023 VirtualYou
+# License: https://github.com/virtualyou/vytools/blob/main/LICENSE
 #
 # This script helps with docker builds and pushes
 #
 # Author: David L Whitehurst
 #
-###############################################################################
+################################################################################
 if [[ "$1" == "--help" ]]; then
     cat <<'ENDHELP'
 Welcome to the VirtualYou Tool utility.

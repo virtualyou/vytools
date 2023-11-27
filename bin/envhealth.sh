@@ -1,7 +1,9 @@
 #!/bin/bash
-###################################################################
-# Copyright (c) 2023 David L. Whitehurst
-# License: https://github.com/dlwhitehurst/vytools/blob/main/LICENSE
+################################################################################
+# WARNING: USE AT YOUR OWN RISK, WORK IN PROGRESS, REVIEW BEFORE YOU RUN.
+#
+# Copyright (c) 2023 VirtualYou
+# License: https://github.com/virtualyou/vytools/blob/main/LICENSE
 #
 # This script provides indication of environment health.
 #
