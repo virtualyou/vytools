@@ -46,13 +46,12 @@ noAction=true
 while [[ $# > 0 && "${1}" =~ ^-- ]]; do
     case "${1}" in 
         --shell)      initShell=true;     noAction=false; shift 1 ;;
-        --utils)      cloneUtils=true;     noAction=false; shift 1 ;;
+        --utils)      cloneUtils=true;    noAction=false; shift 1 ;;
         --compose)    initCompose=true;   noAction=false; shift 1 ;;
         --apis)       cloneApis=true;     noAction=false; shift 1 ;;
         --app)        cloneApp=true;      noAction=false; shift 1 ;;
-        --prep-local) prepLocal=true;      noAction=false; shift 1 ;;
+        --prep-local) prepLocal=true;     noAction=false; shift 1 ;;
         --prep-prod)  prepProd=true;      noAction=false; shift 1 ;;
-
             *) echo "Unrecognized option: ${1}" >&2; exit 1 ;;
     esac
 done
@@ -94,7 +93,7 @@ if [[ ${cloneUtils} == true ]]; then
     cd $VY_PROJECTS
     ( set -ex
       git clone -b main     git@github.com:dlwhitehurst/vymain.git
-      git clone -b main     git@github.com:dlwhitehurst/vyconfigs.git
+      git clone -b main     git@github.com:dlwhitehurst/vydevops.git
       git clone -b main     git@github.com:dlwhitehurst/vydata.git
     )
 fi
