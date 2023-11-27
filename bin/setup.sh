@@ -1,7 +1,7 @@
 #!/bin/bash
 ###################################################################
 # Copyright (c) 2023 David L. Whitehurst
-# License: https://github.com/dlwhitehurst/vytools/blob/main/LICENSE
+# License: https://github.com/virtualyou/vytools/blob/main/LICENSE
 #
 # Setup a VirtualYou dev environment from scratch.
 #
@@ -92,27 +92,27 @@ fi
 if [[ ${cloneUtils} == true ]]; then
     cd $VY_PROJECTS
     ( set -ex
-      git clone -b main     git@github.com:dlwhitehurst/vymain.git
-      git clone -b main     git@github.com:dlwhitehurst/vydevops.git
-      git clone -b main     git@github.com:dlwhitehurst/vydata.git
+      git clone -b main     git@github.com:virtualyou/vymain.git
+      git clone -b main     git@github.com:virtualyou/vydevops.git
+      git clone -b main     git@github.com:virtualyou/vydata.git
     )
 fi
 
 if [[ ${cloneApis} == true ]]; then
     cd $VY_PROJECTS
     ( set -ex
-      git clone -b main     git@github.com:dlwhitehurst/userauth.git
-      git clone -b main     git@github.com:dlwhitehurst/personal.git
-      git clone -b main     git@github.com:dlwhitehurst/medical.git
-      git clone -b main     git@github.com:dlwhitehurst/financial.git
-      git clone -b main     git@github.com:dlwhitehurst/administration.git
+      git clone -b main     git@github.com:virtualyou/userauth.git
+      git clone -b main     git@github.com:virtualyou/personal.git
+      git clone -b main     git@github.com:virtualyou/medical.git
+      git clone -b main     git@github.com:virtualyou/financial.git
+      git clone -b main     git@github.com:virtualyou/administration.git
 
     )
 fi
 if [[ ${cloneApp} == true ]]; then
     cd $VY_PROJECTS
     ( set -ex
-      git clone -b main git@github.com:dlwhitehurst/vite-mvp.git
+      git clone -b main git@github.com:virtualyou/vite-mvp.git
     )
 fi
 
@@ -140,7 +140,7 @@ if [[ ${prepLocal} == true ]]; then
       echo
       echo "      ** Do not forget to pull domain from cookie session in userauth."
       echo "      ** This means that you need to comment userauth server.js file and build an image for Docker Hub."
-      echo "      ** docker build -t dlwhitehurst/userauth:0.1.0-dev"
+      echo "      ** docker build -t virtualyou/userauth:0.1.0-dev"
 fi
 
 # --------------------------------------------------
@@ -167,6 +167,6 @@ if [[ ${prepProd} == true ]]; then
       echo
       echo "      ** Do not forget to add domain to cookie session in userauth."
       echo "      ** This means that you need to uncomment userauth server.js file and build an image for Docker Hub."
-      echo "      ** docker build -t dlwhitehurst/userauth:0.1.0"
+      echo "      ** docker build -t virtualyou/userauth:0.1.0"
 
 fi
