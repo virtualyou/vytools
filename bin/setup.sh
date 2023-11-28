@@ -86,6 +86,20 @@ if [[ ${initCompose} == true ]]; then
   mkdir docker
   cd docker
   cp ${VY_PROJECTS}/vymain/docker-compose.yaml .
+
+  OLD="$( grep -o -m 1 '[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}' docker-compose.yaml )"
+  echo $OLD
+
+  IP="$( ip route get 8.8.8.8 | grep -oP 'src \K[^ ]+' )"
+  echo $IP
+  STR="s/$OLD/$IP/g"
+  echo $STR
+
+  sed -i $STR ${VY_PROJECTS}/docker/docker-compose.yaml
+
+# - "myhost:172.22.227.36"
+# new 172.25.78.22
+
 fi
 
 # --------------------------------------------------
@@ -114,7 +128,7 @@ fi
 if [[ ${cloneApp} == true ]]; then
     cd $VY_PROJECTS
     ( set -ex
-      git clone -b main git@github.com:virtualyou/vite-mvp.git
+      git clone -b main git@github.com:virtualyou/app.git
     )
 fi
 
@@ -124,7 +138,7 @@ fi
 if [[ ${prepLocal} == true ]]; then
     cd $VY_PROJECTS
     ( set -ex
-      cd vite-mvp
+      cd app
       sed -i 's/https:\/\/userauth.virtualyou.info/http:\/\/localhost:3001/' vite.config.ts
       sed -i 's/https:\/\/personal.virtualyou.info/http:\/\/localhost:3002/' vite.config.ts
       sed -i 's/https:\/\/medical.virtualyou.info/http:\/\/localhost:3003/' vite.config.ts
@@ -154,7 +168,7 @@ fi
 if [[ ${prepProd} == true ]]; then
     cd $VY_PROJECTS
     ( set -ex
-      cd vite-mvp
+      cd app
       sed -i 's/http:\/\/localhost:3001/https:\/\/userauth.virtualyou.info/' vite.config.ts
       sed -i 's/http:\/\/localhost:3002/https:\/\/personal.virtualyou.info/' vite.config.ts
       sed -i 's/http:\/\/localhost:3003/https:\/\/medical.virtualyou.info/' vite.config.ts
