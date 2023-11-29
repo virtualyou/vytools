@@ -183,9 +183,9 @@ if [[ ${prepProd} == true ]]; then
       sed -i 's/http:\/\/localhost:3000\/userauth\/v1\/auth\//https:\/\/app.virtualyou.info\/userauth\/v1\/auth\//' auth.service.ts
       sed -i 's/http:\/\/localhost:3000\/administration\/v1\/owner\//https:\/\/app.virtualyou.info\/administration\/v1\/owner\//' administration.service.ts
 
-      cd $VY_PROJECTS
-      cd userauth
-      sed -i 's/\/\/domain:/domain:/' server.js
+#      cd $VY_PROJECTS
+#      cd userauth
+#      sed -i 's/\/\/domain:/domain:/' server.js
 
     )
 
