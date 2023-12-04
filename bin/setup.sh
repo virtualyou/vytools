@@ -153,13 +153,6 @@ if [[ ${prepLocal} == true ]]; then
       sed -i 's/https:\/\/app.virtualyou.info\/userauth\/v1\/auth\//http:\/\/localhost:3000\/userauth\/v1\/auth\//' auth.service.ts
       sed -i 's/https:\/\/app.virtualyou.info\/administration\/v1\/owner\//http:\/\/localhost:3000\/administration\/owner\//' administration.service.ts
 
-#      sed -i 's/https:\/\/userauth.virtualyou.info\/userauth\/v1\//http:\/\/localhost:3000\/userauth\/v1\//' user.service.ts
-#      sed -i 's/https:\/\/personal.virtualyou.info\/personal\/v1\/owner\//http:\/\/localhost:3000\/personal\/v1\/owner\//' personal.service.ts
-#      sed -i 's/https:\/\/medical.virtualyou.info\/medical\/v1\/owner\//http:\/\/localhost:3000\/medical\/v1\/owner\//' medical.service.ts
-#      sed -i 's/https:\/\/financial.virtualyou.info\/financial\/v1\/owner\//http:\/\/localhost:3000\/financial\/v1\/owner\//' financial.service.ts
-#      sed -i 's/https:\/\/userauth.virtualyou.info\/userauth\/v1\/auth\//http:\/\/localhost:3000\/userauth\/v1\/auth\//' auth.service.ts
-#      sed -i 's/https:\/\/administration.virtualyou.info\/administration\/v1\/owner\//http:\/\/localhost:3000\/administration\/v1\/owner\//' administration.service.ts
-
       cd ../utility
       sed -i 's/https:\/\/app.virtualyou.info/http:\/\/localhost:3000/' EmailBody.ts
 
@@ -192,13 +185,6 @@ if [[ ${prepProd} == true ]]; then
       sed -i 's/http:\/\/localhost:3000\/financial\/v1\/owner\//https:\/\/app.virtualyou.info\/financial\/v1\/owner\//' financial.service.ts
       sed -i 's/http:\/\/localhost:3000\/userauth\/v1\/auth\//https:\/\/app.virtualyou.info\/userauth\/v1\/auth\//' auth.service.ts
       sed -i 's/http:\/\/localhost:3000\/administration\/v1\/owner\//https:\/\/app.virtualyou.info\/administration\/v1\/owner\//' administration.service.ts
-
-#      sed -i 's/http:\/\/localhost:3000\/userauth\/v1\//https:\/\/userauth.virtualyou.info\/userauth\/v1\//' user.service.ts
-#      sed -i 's/http:\/\/localhost:3000\/personal\/v1\/owner\//https:\/\/personal.virtualyou.info\/personal\/v1\/owner\//' personal.service.ts
-#      sed -i 's/http:\/\/localhost:3000\/medical\/v1\/owner\//https:\/\/medical.virtualyou.info\/medical\/v1\/owner\//' medical.service.ts
-#      sed -i 's/http:\/\/localhost:3000\/financial\/v1\/owner\//https:\/\/financial.virtualyou.info\/financial\/v1\/owner\//' financial.service.ts
-#      sed -i 's/http:\/\/localhost:3000\/userauth\/v1\/auth\//https:\/\/userauth.virtualyou.info\/userauth\/v1\/auth\//' auth.service.ts
-#      sed -i 's/http:\/\/localhost:3000\/administration\/v1\/owner\//https:\/\/administration.virtualyou.info\/administration\/v1\/owner\//' administration.service.ts
 
       cd ../utility
       sed -i 's/http:\/\/localhost:3000/https:\/\/app.virtualyou.info/' EmailBody.ts
