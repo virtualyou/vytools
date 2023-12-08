@@ -24,6 +24,7 @@ Options:
     --compose     Get docker-compose and setup in isolation
     --apis        Clone the api repos
     --app         Clone the current UI application
+    --site	  Clone the website
     --prep-local  Prepare application for local development
     --prep-prod   Prepare application for production deployment
 ENDHELP
@@ -52,6 +53,7 @@ while [[ $# > 0 && "${1}" =~ ^-- ]]; do
         --compose)    initCompose=true;   noAction=false; shift 1 ;;
         --apis)       cloneApis=true;     noAction=false; shift 1 ;;
         --app)        cloneApp=true;      noAction=false; shift 1 ;;
+        --site)       cloneSite=true;     noAction=false; shift 1 ;;
         --prep-local) prepLocal=true;     noAction=false; shift 1 ;;
         --prep-prod)  prepProd=true;      noAction=false; shift 1 ;;
             *) echo "Unrecognized option: ${1}" >&2; exit 1 ;;
@@ -125,10 +127,18 @@ if [[ ${cloneApis} == true ]]; then
 
     )
 fi
+
 if [[ ${cloneApp} == true ]]; then
     cd $VY_PROJECTS
     ( set -ex
       git clone -b main git@github.com:virtualyou/app.git
+    )
+fi
+
+if [[ ${cloneSite} == true ]]; then
+    cd $VY_PROJECTS
+    ( set -ex
+      git clone -b main git@github.com:virtualyou/site.git
     )
 fi
 
