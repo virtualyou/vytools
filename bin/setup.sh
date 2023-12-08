@@ -124,7 +124,7 @@ if [[ ${cloneApis} == true ]]; then
       git clone -b main     git@github.com:virtualyou/medical.git
       git clone -b main     git@github.com:virtualyou/financial.git
       git clone -b main     git@github.com:virtualyou/administration.git
-
+      git clone -b main     git@github.com:virtualyou/legal.git
     )
 fi
 
