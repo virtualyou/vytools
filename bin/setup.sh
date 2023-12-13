@@ -2,8 +2,22 @@
 ################################################################################
 # WARNING: USE AT YOUR OWN RISK, WORK IN PROGRESS, REVIEW BEFORE YOU RUN.
 #
-# Copyright (c) 2023 VirtualYou
-# License: https://github.com/virtualyou/vytools/blob/main/LICENSE
+# VirtualYou Project
+# Copyright 2023 David L Whitehurst
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# setup.sh
 #
 # Setup a VirtualYou dev environment from scratch.
 #
@@ -13,7 +27,7 @@ if [[ "$1" == "--help" ]]; then
 Welcome to the VirtualYou development setup utility.
 
 Usage:
-  (First make sure that you are git-authenticated to GitHub)
+  ( First make sure that you are git-authenticated to GitHub )
   cd ~/virtualyou  # or where you want the git working directories to live
   setup.sh [options]
 
@@ -24,7 +38,7 @@ Options:
     --compose     Get docker-compose and setup in isolation
     --apis        Clone the api repos
     --app         Clone the current UI application
-    --site	  Clone the website
+    --site	      Clone the website
     --prep-local  Prepare application for local development
     --prep-prod   Prepare application for production deployment
 ENDHELP
@@ -46,7 +60,7 @@ noAction=true
 # --------------------------------------------------
 # parse command line options
 
-while [[ $# > 0 && "${1}" =~ ^-- ]]; do
+while [[ $# -gt 0 && "${1}" =~ ^-- ]]; do
     case "${1}" in 
         --shell)      initShell=true;     noAction=false; shift 1 ;;
         --utils)      cloneUtils=true;    noAction=false; shift 1 ;;
@@ -67,7 +81,7 @@ fi
 
 # --------------------------------------------------
 # shell setup
-echo $VY_PROJECTS
+#
 
 if [[ ${initShell} == true ]]; then
     if [[ -e ~/.bashrc ]]; then
@@ -79,6 +93,17 @@ fi
 
 # --------------------------------------------------
 # docker-compose setup
+#
+# This makes a new directory /docker under the proj
+# dir and copies four docker-compose files into
+# the directory for use. Also, this sets the IP for
+# WSL in the compose for "myhost: IP".
+#
+# WARNING: be sure to understand this before using
+#
+# TODO - remove the folder before making the directory
+# TODO - only allow this option with extra -y e.g.
+#
 
 if [[ ${initCompose} == true ]]; then
   echo "BASH_DIR is $BASH_DIR"
@@ -88,6 +113,10 @@ if [[ ${initCompose} == true ]]; then
   mkdir docker
   cd docker
   cp ${VY_PROJECTS}/vymain/docker-compose.yaml .
+  cp ${VY_PROJECTS}/vymain/db.yaml .
+  cp ${VY_PROJECTS}/vymain/api.yaml .
+  cp ${VY_PROJECTS}/vymain/app.yaml .
+
 
   OLD="$( grep -o -m 1 '[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}' docker-compose.yaml )"
   echo $OLD
@@ -98,6 +127,8 @@ if [[ ${initCompose} == true ]]; then
   echo $STR
 
   sed -i $STR ${VY_PROJECTS}/docker/docker-compose.yaml
+  sed -i $STR ${VY_PROJECTS}/docker/api.yaml
+  sed -i $STR ${VY_PROJECTS}/docker/app.yaml
 
 # - "myhost:172.22.227.36"
 # new 172.25.78.22

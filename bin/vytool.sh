@@ -2,12 +2,24 @@
 ################################################################################
 # WARNING: USE AT YOUR OWN RISK, WORK IN PROGRESS, REVIEW BEFORE YOU RUN.
 #
-# Copyright (c) 2023 VirtualYou
-# License: https://github.com/virtualyou/vytools/blob/main/LICENSE
+# VirtualYou Project
+# Copyright 2023 David L Whitehurst
 #
-# This script helps with docker builds and pushes
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 #
-# Author: David L Whitehurst
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# vytool.sh
+#
+# Daily development utilities
 #
 ################################################################################
 if [[ "$1" == "--help" ]]; then
@@ -19,13 +31,17 @@ Usage:
 
 
 Options:
-    --dclean        Clean all containers then all images (w/prompts)
-    --ver-api       Set package.json file (with each.sh)
+    --app-local     (WARNING) Prep for local dist (NGINX) testing
+    --app-prod      (WARNING) Prep for production dist (NGINX) release
+    --dclean        (WARNING) Clean all containers then all images (w/prompts)
     --pkg-api       Build and package APIs
     --pkg-app       Build and package UI application
-    --test          Test script sandbox
     --push-api      Push API images
     --push-all      Push all tagged images
+    --release-local Release application for local testing (NGINX)
+    --release-prod  Release application for production hosting (NGINX)
+    --test          Testing option
+    --ver-api       Set package.json file (with each.sh)
 ENDHELP
     exit
 fi
@@ -49,14 +65,23 @@ noAction=true
 # --------------------------------------------------
 # parse command line options
 
-while [[ $# > 0 && "${1}" =~ ^-- ]]; do
+while [[ $# -gt 0 && "${1}" =~ ^-- ]]; do
     case "${1}" in
-        --dclean)   dockerClean=true;     noAction=false; shift 1 ;;
-        --ver-api)  versionApis=true;     noAction=false; shift 1 ;;
-        --pkg-api)  packageApis=true;     noAction=false; shift 1 ;;
-        --push-api) pushApis=true;        noAction=false; shift 1 ;;
-        --app-pkg)  packageApp=true;      noAction=false; shift 1 ;;
-        --test)     testScript=true;      noAction=false; shift 1 ;;
+        --dclean)       dockerClean=true;     noAction=false; shift 1 ;;
+        --ver-api)      versionApis=true;     noAction=false; shift 1 ;;
+        --pkg-api)      packageApis=true;     noAction=false; shift 1 ;;
+        --pkg-app)      packageApp=true;      noAction=false; shift 1 ;;
+        --push-api)     pushApis=true;        noAction=false; shift 1 ;;
+        --push-app)     pushApp=true;         noAction=false; shift 1 ;;
+
+        --test)         testScript=true;      noAction=false; shift 1 ;;
+
+        --app-local)    appLocal=true;        noAction=false; shift 1 ;;
+        --app-prod)     appProd=true;         noAction=false; shift 1 ;;
+
+        --release-local)    relLocal=true;        noAction=false; shift 1 ;;
+        --release-prod)     relProd=true;         noAction=false; shift 1 ;;
+
         *) echo "Unrecognized option:         ${1}" >&2; exit 1 ;;
     esac
 done
@@ -187,3 +212,82 @@ if [[ ${packageApp} == true ]]; then
   echo "This is under construction."
 fi
 
+# --------------------------------------------------
+# App Local
+if [[ ${appLocal} == true ]]; then
+  echo "Local dist configuration (NGINX)"
+  OLD="$( grep -o -m 1 '[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}' ${VY_PROJECTS}/app/nginx.conf )"
+  echo $OLD
+
+  IP="$( ip route get 8.8.8.8 | grep -oP 'src \K[^ ]+' )"
+  echo $IP
+  STR="s/$OLD/$IP/g"
+  echo $STR
+
+  sed -i $STR ${VY_PROJECTS}/app/nginx.conf
+fi
+
+# --------------------------------------------------
+# Release Local
+if [[ ${relLocal} == true ]]; then
+    if [ -z "$BUILD_VERSION" ]; then
+        echo "ERROR: BUILD_VERSION is not set"
+        exit 1
+    fi
+
+    PROXY="$(grep -m 1 proxy_pass ${VY_PROJECTS}/app/nginx.conf | awk '{print $2}')"
+
+    echo "Pre-Release Checklist: "
+    echo "  - nginx configuration shows $PROXY"
+    if [ -e ${VY_PROJECTS}/app/.env ]; then
+      echo "  - .env file exists"
+    else
+      echo "  - .env file does not exist"
+    fi
+    echo
+    # Prompt the user for confirmation
+    read -p "Do you want to proceed? (y/n) " choice
+
+    # Check the user's response
+    case "$choice" in
+      y|Y ) echo "Building, packaging, tagging, and pushing version $BUILD_VERSION for local testing (NGINX).";;
+      n|N ) echo "Exiting..."; exit;;
+      * ) echo "Invalid response"; exit;;
+    esac
+
+    # Point of NO RETURN
+    ( # set -ex
+      cd ${VY_PROJECTS}/app
+      rm -rf dist
+      npm run build
+    # Check if command failed
+      if [ $? -ne 0 ]; then
+        echo "ERROR: Something failed, consider set -ex and run again."
+        exit;
+      fi
+
+      docker build -t dlwhitehurst/app:$BUILD_VERSION .
+      # Check if command failed
+      if [ $? -ne 0 ]; then
+        echo "ERROR: Something failed, consider set -ex and run again."
+        exit;
+      fi
+
+      docker push dlwhitehurst/app:$BUILD_VERSION
+      # Check if command failed
+      if [ $? -ne 0 ]; then
+        echo "ERROR: Something failed, consider set -ex and run again."
+        exit;
+      fi
+
+      echo "SUCCESS: dlwhitehurst/app:$BUILD_VERSION now resides at https://hub.docker.com/dlwhitehurst."
+    )
+
+
+fi
+
+# --------------------------------------------------
+# App Prod
+if [[ ${appProd} == true ]]; then
+  echo "Product dist release (NGINX)"
+fi
