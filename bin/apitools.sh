@@ -12,19 +12,20 @@
 ################################################################################
 if [[ "$1" == "--help" ]]; then
     cat <<'ENDHELP'
-Welcome to the VirtualYou Tool utility.
+API Tools
 
 Usage:
-  tool.sh [options]
+  apitools.sh [options]
 
 
 Options:
-    --dclean    Clean all containers then all images (w/prompts)
-    --pkg-api   Build and package APIs
-    --pkg-app   Build and package UI application
-    --test      Test script sandbox
-    --push-api  Push API images
-    --push-all  Push all tagged images
+    --dclean        Clean all containers then all images (w/prompts)
+    --ver-api       Set package.json file (with each.sh)
+    --pkg-api       Build and package APIs
+    --pkg-app       Build and package UI application
+    --test          Test script sandbox
+    --push-api      Push API images
+    --push-all      Push all tagged images
 ENDHELP
     exit
 fi
@@ -51,6 +52,7 @@ noAction=true
 while [[ $# > 0 && "${1}" =~ ^-- ]]; do
     case "${1}" in
         --dclean)   dockerClean=true;     noAction=false; shift 1 ;;
+        --ver-api)  versionApis=true;     noAction=false; shift 1 ;;
         --pkg-api)  packageApis=true;     noAction=false; shift 1 ;;
         --push-api) pushApis=true;        noAction=false; shift 1 ;;
         --app-pkg)  packageApp=true;      noAction=false; shift 1 ;;
@@ -63,6 +65,7 @@ if [[ ${noAction} == true ]]; then
     echo "No action was specified" >&2
     exit 1
 fi
+
 
 # --------------------------------------------------
 # docker clean
@@ -99,42 +102,75 @@ if [[ ${dockerClean} == true ]]; then
 fi
 
 # --------------------------------------------------
+# API versions
+
+if [[ ${versionApis} == true ]]; then
+
+  if [ -z "$BUILD_VERSION" ]; then
+      echo "ERROR: BUILD_VERSION is not set"
+      exit 1
+  fi
+
+  RED='\033[0;31m'
+  GREEN='\033[0;32m'
+  NC='\033[0m' # No Color
+
+  # RESIDING_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+  ( set -ex
+    CALL_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" >/dev/null 2>&1 && pwd )"
+    REPLACE="$(grep version package.json | awk '{print $2}' | grep -oP '(?<=\").*?(?=\")')"
+    STR="/version/s/$REPLACE/$BUILD_VERSION/g"
+
+    sed -i $STR $CALL_DIR/package.json
+    echo -e "${GREEN}SUCCESS: Set Version: $BUILD_VERSION.${NC}"
+  )
+fi
+
+# --------------------------------------------------
 # API packages
+
 if [[ ${packageApis} == true ]]; then
 
-#  BUILD_VERSION=0.1.0
+    if [ -z "$BUILD_VERSION" ]; then
+        echo "ERROR: BUILD_VERSION is not set"
+        exit 1
+    fi
 
-  cd $VY_PROJECTS
   ( set -ex
-    cd userauth
+    cd $VY_PROJECTS/userauth
     docker build -t dlwhitehurst/userauth:$BUILD_VERSION .
-    cd ../personal
+    cd $VY_PROJECTS/personal
     docker build -t dlwhitehurst/personal:$BUILD_VERSION .
-    cd ../medical
+    cd $VY_PROJECTS/medical
     docker build -t dlwhitehurst/medical:$BUILD_VERSION .
-    cd ../financial
+    cd $VY_PROJECTS/financial
     docker build -t dlwhitehurst/financial:$BUILD_VERSION .
-    cd ../administration
+    cd $VY_PROJECTS/administration
     docker build -t dlwhitehurst/administration:$BUILD_VERSION .
+    cd $VY_PROJECTS/legal
+    docker build -t dlwhitehurst/legal:$BUILD_VERSION .
   )
 fi
 
 if [[ ${pushApis} == true ]]; then
 
-#  BUILD_VERSION=0.1.0
-
-  cd $VY_PROJECTS
+    if [ -z "$BUILD_VERSION" ]; then
+        echo "ERROR: BUILD_VERSION is not set"
+        exit 1
+    fi
   ( set -ex
-    cd userauth
+    cd $VY_PROJECTS/userauth
     docker push dlwhitehurst/userauth:$BUILD_VERSION
-    cd ../personal
+    cd $VY_PROJECTS/personal
     docker push dlwhitehurst/personal:$BUILD_VERSION
-    cd ../medical
+    cd $VY_PROJECTS/medical
     docker push dlwhitehurst/medical:$BUILD_VERSION
-    cd ../financial
+    cd $VY_PROJECTS/financial
     docker push dlwhitehurst/financial:$BUILD_VERSION
-    cd ../administration
+    cd $VY_PROJECTS/administration
     docker push dlwhitehurst/administration:$BUILD_VERSION
+    cd $VY_PROJECTS/legal
+    docker push dlwhitehurst/legal:$BUILD_VERSION
   )
 fi
 
