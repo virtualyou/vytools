@@ -48,7 +48,7 @@ fi
 ################################################################################
 
 BASH_DIR="$( cd "$(dirname "${BASH_SOURCE[0]}" )" && pwd )"
-VY_PROJECTS=$( cd ${BASH_DIR}/../.. && pwd )
+VY_PROJECTS=$( cd "${BASH_DIR}"/../.. && pwd )
 
 # Get the version number from the first positional parameter
 BUILD_VERSION=$2
@@ -112,13 +112,13 @@ if [[ ${dockerClean} == true ]]; then
 
     # Delete all Docker Containers
     ( set -ex
-      docker rm -f $(docker ps -aq)
+      docker rm -f "$(docker ps -aq)"
     )
 
     # Delete all Docker Images
     echo "Now, deleting all images"
     ( set -ex
-      docker rmi -f $(docker images -aq)
+      docker rmi -f "$(docker images -aq)"
     )
   else
     echo "You need to stop running Docker containers first.";
@@ -146,7 +146,7 @@ if [[ ${versionApis} == true ]]; then
     REPLACE="$(grep version package.json | awk '{print $2}' | grep -oP '(?<=\").*?(?=\")')"
     STR="/version/s/$REPLACE/$BUILD_VERSION/g"
 
-    sed -i $STR $CALL_DIR/package.json
+    sed -i "$STR $CALL_DIR"/package.json
     echo -e "${GREEN}SUCCESS: Set Version: $BUILD_VERSION.${NC}"
   )
 fi
@@ -162,18 +162,18 @@ if [[ ${packageApis} == true ]]; then
     fi
 
   ( set -ex
-    cd $VY_PROJECTS/userauth
-    docker build -t dlwhitehurst/userauth:$BUILD_VERSION .
-    cd $VY_PROJECTS/personal
-    docker build -t dlwhitehurst/personal:$BUILD_VERSION .
-    cd $VY_PROJECTS/medical
-    docker build -t dlwhitehurst/medical:$BUILD_VERSION .
-    cd $VY_PROJECTS/financial
-    docker build -t dlwhitehurst/financial:$BUILD_VERSION .
-    cd $VY_PROJECTS/administration
-    docker build -t dlwhitehurst/administration:$BUILD_VERSION .
-    cd $VY_PROJECTS/legal
-    docker build -t dlwhitehurst/legal:$BUILD_VERSION .
+    cd "$VY_PROJECTS"/userauth
+    docker build -t dlwhitehurst/userauth:"$BUILD_VERSION" .
+    cd "$VY_PROJECTS"/personal
+    docker build -t dlwhitehurst/personal:"$BUILD_VERSION" .
+    cd "$VY_PROJECTS"/medical
+    docker build -t dlwhitehurst/medical:"$BUILD_VERSION" .
+    cd "$VY_PROJECTS"/financial
+    docker build -t dlwhitehurst/financial:"$BUILD_VERSION" .
+    cd "$VY_PROJECTS"/administration
+    docker build -t dlwhitehurst/administration:"$BUILD_VERSION" .
+    cd "$VY_PROJECTS"/legal
+    docker build -t dlwhitehurst/legal:"$BUILD_VERSION" .
   )
 fi
 
@@ -184,47 +184,47 @@ if [[ ${pushApis} == true ]]; then
         exit 1
     fi
   ( set -ex
-    cd $VY_PROJECTS/userauth
-    docker push dlwhitehurst/userauth:$BUILD_VERSION
-    cd $VY_PROJECTS/personal
-    docker push dlwhitehurst/personal:$BUILD_VERSION
-    cd $VY_PROJECTS/medical
-    docker push dlwhitehurst/medical:$BUILD_VERSION
-    cd $VY_PROJECTS/financial
-    docker push dlwhitehurst/financial:$BUILD_VERSION
-    cd $VY_PROJECTS/administration
-    docker push dlwhitehurst/administration:$BUILD_VERSION
-    cd $VY_PROJECTS/legal
-    docker push dlwhitehurst/legal:$BUILD_VERSION
+    cd "$VY_PROJECTS"/userauth
+    docker push dlwhitehurst/userauth:"$BUILD_VERSION"
+    cd "$VY_PROJECTS"/personal
+    docker push dlwhitehurst/personal:"$BUILD_VERSION"
+    cd "$VY_PROJECTS"/medical
+    docker push dlwhitehurst/medical:"$BUILD_VERSION"
+    cd "$VY_PROJECTS"/financial
+    docker push dlwhitehurst/financial:"$BUILD_VERSION"
+    cd "$VY_PROJECTS"/administration
+    docker push dlwhitehurst/administration:"$BUILD_VERSION"
+    cd "$VY_PROJECTS"/legal
+    docker push dlwhitehurst/legal:"$BUILD_VERSION"
   )
 fi
 
 # --------------------------------------------------
 # Test Script
 if [[ ${testScript} == true ]]; then
-  echo $BUILD_VERSION
+  echo "$VY_PROJECTS"
 fi
 
 # --------------------------------------------------
 # UI package
 if [[ ${packageApp} == true ]]; then
-  echo $BUILD_VERSION
+  echo "$BUILD_VERSION"
   echo "This is under construction."
 fi
 
 # --------------------------------------------------
-# App Local
+# Prepare App for Local (NGINX)
 if [[ ${appLocal} == true ]]; then
   echo "Local dist configuration (NGINX)"
-  OLD="$( grep -o -m 1 '[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}' ${VY_PROJECTS}/app/nginx.conf )"
-  echo $OLD
+  OLD="$( grep -o -m 1 '[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}' "${VY_PROJECTS}"/app/nginx.conf )"
+  echo "$OLD"
 
   IP="$( ip route get 8.8.8.8 | grep -oP 'src \K[^ ]+' )"
-  echo $IP
+  echo "$IP"
   STR="s/$OLD/$IP/g"
-  echo $STR
+  echo "$STR"
 
-  sed -i $STR ${VY_PROJECTS}/app/nginx.conf
+  sed -i "$STR" "${VY_PROJECTS}"/app/nginx.conf
 fi
 
 # --------------------------------------------------
@@ -235,11 +235,11 @@ if [[ ${relLocal} == true ]]; then
         exit 1
     fi
 
-    PROXY="$(grep -m 1 proxy_pass ${VY_PROJECTS}/app/nginx.conf | awk '{print $2}')"
+    PROXY="$(grep -m 1 proxy_pass "${VY_PROJECTS}"/app/nginx.conf | awk '{print $2}')"
 
     echo "Pre-Release Checklist: "
     echo "  - nginx configuration shows $PROXY"
-    if [ -e ${VY_PROJECTS}/app/.env ]; then
+    if [ -e "${VY_PROJECTS}"/app/.env ]; then
       echo "  - .env file exists"
     else
       echo "  - .env file does not exist"
@@ -257,7 +257,7 @@ if [[ ${relLocal} == true ]]; then
 
     # Point of NO RETURN
     ( # set -ex
-      cd ${VY_PROJECTS}/app
+      cd "${VY_PROJECTS}"/app
       rm -rf dist
       npm run build
     # Check if command failed
@@ -273,7 +273,7 @@ if [[ ${relLocal} == true ]]; then
         exit;
       fi
 
-      docker push dlwhitehurst/app:$BUILD_VERSION
+      docker push dlwhitehurst/app:"$BUILD_VERSION"
       # Check if command failed
       if [ $? -ne 0 ]; then
         echo "ERROR: Something failed, consider set -ex and run again."
@@ -287,7 +287,13 @@ if [[ ${relLocal} == true ]]; then
 fi
 
 # --------------------------------------------------
-# App Prod
+# Prepare App for Prod (NGINX)
 if [[ ${appProd} == true ]]; then
-  echo "Product dist release (NGINX)"
+  echo "Production dist prep (NGINX)"
+fi
+
+# --------------------------------------------------
+# Release Prod
+if [[ ${relProd} == true ]]; then
+  echo "Production dist release (NGINX)"
 fi
