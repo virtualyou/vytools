@@ -24,30 +24,33 @@
 ################################################################################
 if [[ "$1" == "--help" ]]; then
     cat <<'ENDHELP'
-API Tools
+Project Tool Utility
 
 Usage:
-  apitools.sh [options]
+  vytool.sh [options]
 
 
 Options:
     --app-local     (WARNING) Prep for local dist (NGINX) testing
     --app-prod      (WARNING) Prep for production dist (NGINX) release
+    --chk-ver       (EACH << CMD) Get package.json version
     --dclean        (WARNING) Clean all containers then all images (w/prompts)
-    --pkg-api       Build and package APIs
-    --pkg-app       Build and package UI application
-    --push-api      Push API images
-    --push-all      Push all tagged images
-    --release-local Release application for local testing (NGINX)
-    --release-prod  Release application for production hosting (NGINX)
+    --develop-local (SAFE) Base understanding of current Vite application overall
+    --pkg-api       (WARNING) Build and package APIs
+    --pkg-app       (WARNING) Build and package UI application
+    --push-api      (WARNING) Push API images
+    --push-app      (WARNING) Push App image
+    --release-local (WARNING) Release application for local testing (NGINX)
+    --release-prod  (WARNING) Release application for production hosting (NGINX)
     --test          Testing option
-    --ver-api       Set package.json file (with each.sh)
+    --set-ver       (EACH << CMD) Set package.json file
 ENDHELP
     exit
 fi
 ################################################################################
 
 BASH_DIR="$( cd "$(dirname "${BASH_SOURCE[0]}" )" && pwd )"
+CALL_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" >/dev/null 2>&1 && pwd )"
 VY_PROJECTS=$( cd "${BASH_DIR}"/../.. && pwd )
 
 # Get the version number from the first positional parameter
@@ -68,7 +71,8 @@ noAction=true
 while [[ $# -gt 0 && "${1}" =~ ^-- ]]; do
     case "${1}" in
         --dclean)       dockerClean=true;     noAction=false; shift 1 ;;
-        --ver-api)      versionApis=true;     noAction=false; shift 1 ;;
+        --chk-ver)      chkVersion=true;       noAction=false; shift 1 ;;
+        --set-ver)      setVersion=true;     noAction=false; shift 1 ;;
         --pkg-api)      packageApis=true;     noAction=false; shift 1 ;;
         --pkg-app)      packageApp=true;      noAction=false; shift 1 ;;
         --push-api)     pushApis=true;        noAction=false; shift 1 ;;
@@ -78,7 +82,7 @@ while [[ $# -gt 0 && "${1}" =~ ^-- ]]; do
 
         --app-local)    appLocal=true;        noAction=false; shift 1 ;;
         --app-prod)     appProd=true;         noAction=false; shift 1 ;;
-
+        --develop-local) devLocal=true;       noAction=false; shift 1 ;;
         --release-local)    relLocal=true;        noAction=false; shift 1 ;;
         --release-prod)     relProd=true;         noAction=false; shift 1 ;;
 
@@ -110,45 +114,63 @@ if [[ ${dockerClean} == true ]]; then
       * ) echo "Invalid response"; exit;;
     esac
 
+    # Delete all Docker containers but mariadb
+    #docker rm -f "$(docker ps -a | grep -v 'mariadb' | awk 'NR>1 {print $1}')"
+
     # Delete all Docker Containers
-    ( set -ex
-      docker rm -f "$(docker ps -aq)"
-    )
+    docker rm -f "$(docker ps -aq)"
+
+    echo "Now, deleting all images"
+
+    # Delete all Docker images but mariadb
+    #docker rmi -f "$(docker images | grep -v 'mariadb' | awk 'NR>1 {print $3}')"
 
     # Delete all Docker Images
-    echo "Now, deleting all images"
-    ( set -ex
-      docker rmi -f "$(docker images -aq)"
-    )
-  else
-    echo "You need to stop running Docker containers first.";
-    exit;
+    docker rmi -f "$(docker images -aq)"
   fi
 fi
 
 # --------------------------------------------------
-# API versions
+# Set versions
 
-if [[ ${versionApis} == true ]]; then
+if [[ ${setVersion} == true ]]; then
 
   if [ -z "$BUILD_VERSION" ]; then
       echo "ERROR: BUILD_VERSION is not set"
       exit 1
   fi
 
-  RED='\033[0;31m'
+  #RED='\033[0;31m'
   GREEN='\033[0;32m'
   NC='\033[0m' # No Color
 
   # RESIDING_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
   ( set -ex
-    CALL_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" >/dev/null 2>&1 && pwd )"
     REPLACE="$(grep version package.json | awk '{print $2}' | grep -oP '(?<=\").*?(?=\")')"
     STR="/version/s/$REPLACE/$BUILD_VERSION/g"
 
     sed -i "$STR $CALL_DIR"/package.json
     echo -e "${GREEN}SUCCESS: Set Version: $BUILD_VERSION.${NC}"
   )
+fi
+
+# --------------------------------------------------
+# Get version
+
+if [[ ${chkVersion} == true ]]; then
+
+  #RED='\033[0;31m'
+  GREEN='\033[0;32m'
+  NC='\033[0m' # No Color
+
+    if [ -e ./package.json ]; then
+      # RESIDING_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+      ( #set -ex
+        CALL_DIR="$( cd "$( dirname "${BASH_SOURCE[1]}" )" >/dev/null 2>&1 && pwd )"
+        VERSION="$(grep version package.json | awk '{print $2}' | grep -oP '(?<=\").*?(?=\")')"
+        echo -e "${GREEN}Version: $VERSION.${NC}"
+      )
+    fi
 fi
 
 # --------------------------------------------------
@@ -206,10 +228,13 @@ if [[ ${testScript} == true ]]; then
 fi
 
 # --------------------------------------------------
-# UI package
+# App package
 if [[ ${packageApp} == true ]]; then
-  echo "$BUILD_VERSION"
-  echo "This is under construction."
+  if [ -z "$BUILD_VERSION" ]; then
+      echo "ERROR: BUILD_VERSION is not set"
+      exit 1
+  fi
+
 fi
 
 # --------------------------------------------------
@@ -228,6 +253,29 @@ if [[ ${appLocal} == true ]]; then
 fi
 
 # --------------------------------------------------
+# Develop Local
+if [[ ${devLocal} == true ]]; then
+
+  GREEN='\033[0;32m'
+  NC='\033[0m' # No Color
+
+    cd "${VY_PROJECTS}/app"
+    echo "Pre-Develop Checklist: "
+    echo -e "${GREEN}  - status repo.${NC}"
+    git status
+    echo -e "${GREEN}  - pull from remote.${NC}"
+    git pull
+    echo -e "${GREEN}  - cat env file.${NC}"
+    if [ -e "${VY_PROJECTS}"/app/.env ]; then
+      cat .env
+    else
+      echo -e "${GREEN}  - env file does not exist.${NC}"
+    fi
+    echo -e "${GREEN}  - cat Vite dev server configuration.${NC}"
+    cat vite.config.ts
+fi
+
+# --------------------------------------------------
 # Release Local
 if [[ ${relLocal} == true ]]; then
     if [ -z "$BUILD_VERSION" ]; then
@@ -240,7 +288,8 @@ if [[ ${relLocal} == true ]]; then
     echo "Pre-Release Checklist: "
     echo "  - nginx configuration shows $PROXY"
     if [ -e "${VY_PROJECTS}"/app/.env ]; then
-      echo "  - .env file exists"
+      BASEPATH="$(grep VITE_APP_BASEPATH .env | awk -F= '{print $2}')"
+      echo "  - .env file exists and basepath = $BASEPATH"
     else
       echo "  - .env file does not exist"
     fi
