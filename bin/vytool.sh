@@ -149,7 +149,7 @@ if [[ ${setVersion} == true ]]; then
     REPLACE="$(grep version package.json | awk '{print $2}' | grep -oP '(?<=\").*?(?=\")')"
     STR="/version/s/$REPLACE/$BUILD_VERSION/g"
 
-    sed -i "$STR $CALL_DIR"/package.json
+    sed -i $STR $CALL_DIR/package.json
     echo -e "${GREEN}SUCCESS: Set Version: $BUILD_VERSION.${NC}"
   )
 fi
