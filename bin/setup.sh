@@ -38,9 +38,7 @@ Options:
     --compose     Get docker-compose and setup in isolation
     --apis        Clone the api repos
     --app         Clone the current UI application
-    --site	      Clone the website
-    --prep-local  Prepare application for local development
-    --prep-prod   Prepare application for production deployment
+    --site	  Clone the website
 ENDHELP
     exit
 fi
@@ -68,8 +66,6 @@ while [[ $# -gt 0 && "${1}" =~ ^-- ]]; do
         --apis)       cloneApis=true;     noAction=false; shift 1 ;;
         --app)        cloneApp=true;      noAction=false; shift 1 ;;
         --site)       cloneSite=true;     noAction=false; shift 1 ;;
-        --prep-local) prepLocal=true;     noAction=false; shift 1 ;;
-        --prep-prod)  prepProd=true;      noAction=false; shift 1 ;;
             *) echo "Unrecognized option: ${1}" >&2; exit 1 ;;
     esac
 done
@@ -156,6 +152,8 @@ if [[ ${cloneApis} == true ]]; then
       git clone -b main     git@github.com:virtualyou/financial.git
       git clone -b main     git@github.com:virtualyou/administration.git
       git clone -b main     git@github.com:virtualyou/legal.git
+      git clone -b main     git@github.com:virtualyou/notification.git
+      git clone -b main     git@github.com:virtualyou/speech.git
     )
 fi
 
@@ -173,87 +171,3 @@ if [[ ${cloneSite} == true ]]; then
     )
 fi
 
-# --------------------------------------------------
-# prepLocal
-
-if [[ ${prepLocal} == true ]]; then
-    cd $VY_PROJECTS
-    ( set -ex
-      cd src # src/
-      sed -i 's/https:\/\/userauth.virtualyou.info/http:\/\/localhost:3001/' vite.config.ts
-      sed -i 's/https:\/\/personal.virtualyou.info/http:\/\/localhost:3002/' vite.config.ts
-      sed -i 's/https:\/\/medical.virtualyou.info/http:\/\/localhost:3003/' vite.config.ts
-      sed -i 's/https:\/\/financial.virtualyou.info/http:\/\/localhost:3004/' vite.config.ts
-      sed -i 's/https:\/\/administration.virtualyou.info/http:\/\/localhost:3005/' vite.config.ts
-
-      cd src/services # src/src/services
-      sed -i 's/https:\/\/src.virtualyou.info\/userauth\/v1\//http:\/\/localhost:3000\/userauth\/v1\//' user.service.ts
-      sed -i 's/https:\/\/src.virtualyou.info\/personal\/v1\/owner\//http:\/\/localhost:3000\/personal\/v1\/owner\//' personal.service.ts
-      sed -i 's/https:\/\/src.virtualyou.info\/medical\/v1\/owner\//http:\/\/localhost:3000\/medical\/v1\/owner\//' medical.service.ts
-      sed -i 's/https:\/\/src.virtualyou.info\/financial\/v1\/owner\//http:\/\/localhost:3000\/financial\/v1\/owner\//' financial.service.ts
-      sed -i 's/https:\/\/src.virtualyou.info\/userauth\/v1\/auth\//http:\/\/localhost:3000\/userauth\/v1\/auth\//' auth.service.ts
-      sed -i 's/https:\/\/src.virtualyou.info\/administration\/v1\/owner\//http:\/\/localhost:3000\/administration\/v1\/owner\//' administration.service.ts
-
-      cd ../utility # src/src/utility
-      sed -i 's/https:\/\/src.virtualyou.info/http:\/\/localhost:3000/' EmailBody.ts
-
-      cd ../.. # src directory
-      sed -i 's/https:\/\/userauth.virtualyou.info/http:\/\/localhost:3001/' nginx.conf
-      sed -i 's/https:\/\/personal.virtualyou.info/http:\/\/localhost:3002/' nginx.conf
-      sed -i 's/https:\/\/medical.virtualyou.info/http:\/\/localhost:3003/' nginx.conf
-      sed -i 's/https:\/\/financial.virtualyou.info/http:\/\/localhost:3004/' nginx.conf
-      sed -i 's/https:\/\/administration.virtualyou.info/http:\/\/localhost:3005/' nginx.conf
-
-#      cd $VY_PROJECTS
-#      cd userauth
-#      sed -i 's/domain:/\/\/domain:/' index.ts
-    )
-      echo
-      echo "      ****** Do not forget to build x.x.x-dev and change docker-compose, DO NOT PUSH ******"
-      echo
-fi
-
-# --------------------------------------------------
-# prepProd
-
-if [[ ${prepProd} == true ]]; then
-    cd $VY_PROJECTS
-    ( set -ex
-#      cd src # src/
-#      sed -i 's/http:\/\/localhost:3001/https:\/\/userauth.virtualyou.info/' vite.config.ts
-#      sed -i 's/http:\/\/localhost:3002/https:\/\/personal.virtualyou.info/' vite.config.ts
-#      sed -i 's/http:\/\/localhost:3003/https:\/\/medical.virtualyou.info/' vite.config.ts
-#      sed -i 's/http:\/\/localhost:3004/https:\/\/financial.virtualyou.info/' vite.config.ts
-#      sed -i 's/http:\/\/localhost:3005/https:\/\/administration.virtualyou.info/' vite.config.ts
-#
-#      cd src/services # src/src/services
-#      sed -i 's/http:\/\/localhost:3000\/userauth\/v1\//https:\/\/src.virtualyou.info\/userauth\/v1\//' user.service.ts
-#      sed -i 's/http:\/\/localhost:3000\/personal\/v1\/owner\//https:\/\/src.virtualyou.info\/personal\/v1\/owner\//' personal.service.ts
-#      sed -i 's/http:\/\/localhost:3000\/medical\/v1\/owner\//https:\/\/src.virtualyou.info\/medical\/v1\/owner\//' medical.service.ts
-#      sed -i 's/http:\/\/localhost:3000\/financial\/v1\/owner\//https:\/\/src.virtualyou.info\/financial\/v1\/owner\//' financial.service.ts
-#      sed -i 's/http:\/\/localhost:3000\/userauth\/v1\/auth\//https:\/\/src.virtualyou.info\/userauth\/v1\/auth\//' auth.service.ts
-#      sed -i 's/http:\/\/localhost:3000\/administration\/v1\/owner\//https:\/\/src.virtualyou.info\/administration\/v1\/owner\//' administration.service.ts
-
-      cd $VY_PROJECTS/app/src/utility # src/src/utility
-      sed -i 's/http:\/\/localhost:3000/https:\/\/app.virtualyou.info/' EmailBody.ts
-
-      cd $VY_PROJECTS/app # src directory
-      sed -i 's/http:\/\/localhost:3001/https:\/\/userauth.virtualyou.info/' nginx.conf
-      sed -i 's/http:\/\/localhost:3002/https:\/\/personal.virtualyou.info/' nginx.conf
-      sed -i 's/http:\/\/localhost:3003/https:\/\/medical.virtualyou.info/' nginx.conf
-      sed -i 's/http:\/\/localhost:3004/https:\/\/financial.virtualyou.info/' nginx.conf
-      sed -i 's/http:\/\/localhost:3005/https:\/\/administration.virtualyou.info/' nginx.conf
-      sed -i 's/http:\/\/localhost:3006/https:\/\/legal.virtualyou.info/' nginx.conf
-      sed -i 's/http:\/\/localhost:5000/https:\/\/speech.virtualyou.info/' nginx.conf
-
-#      cd $VY_PROJECTS
-#      cd userauth
-#      sed -i 's/\/\/domain:/domain:/' index.ts
-
-    )
-
-      echo
-      echo "      ****** Please review carefully before any push to remote. ******"
-      echo
-
-fi
