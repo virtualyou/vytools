@@ -219,30 +219,32 @@ fi
 if [[ ${prepProd} == true ]]; then
     cd $VY_PROJECTS
     ( set -ex
-      cd src # src/
-      sed -i 's/http:\/\/localhost:3001/https:\/\/userauth.virtualyou.info/' vite.config.ts
-      sed -i 's/http:\/\/localhost:3002/https:\/\/personal.virtualyou.info/' vite.config.ts
-      sed -i 's/http:\/\/localhost:3003/https:\/\/medical.virtualyou.info/' vite.config.ts
-      sed -i 's/http:\/\/localhost:3004/https:\/\/financial.virtualyou.info/' vite.config.ts
-      sed -i 's/http:\/\/localhost:3005/https:\/\/administration.virtualyou.info/' vite.config.ts
+#      cd src # src/
+#      sed -i 's/http:\/\/localhost:3001/https:\/\/userauth.virtualyou.info/' vite.config.ts
+#      sed -i 's/http:\/\/localhost:3002/https:\/\/personal.virtualyou.info/' vite.config.ts
+#      sed -i 's/http:\/\/localhost:3003/https:\/\/medical.virtualyou.info/' vite.config.ts
+#      sed -i 's/http:\/\/localhost:3004/https:\/\/financial.virtualyou.info/' vite.config.ts
+#      sed -i 's/http:\/\/localhost:3005/https:\/\/administration.virtualyou.info/' vite.config.ts
+#
+#      cd src/services # src/src/services
+#      sed -i 's/http:\/\/localhost:3000\/userauth\/v1\//https:\/\/src.virtualyou.info\/userauth\/v1\//' user.service.ts
+#      sed -i 's/http:\/\/localhost:3000\/personal\/v1\/owner\//https:\/\/src.virtualyou.info\/personal\/v1\/owner\//' personal.service.ts
+#      sed -i 's/http:\/\/localhost:3000\/medical\/v1\/owner\//https:\/\/src.virtualyou.info\/medical\/v1\/owner\//' medical.service.ts
+#      sed -i 's/http:\/\/localhost:3000\/financial\/v1\/owner\//https:\/\/src.virtualyou.info\/financial\/v1\/owner\//' financial.service.ts
+#      sed -i 's/http:\/\/localhost:3000\/userauth\/v1\/auth\//https:\/\/src.virtualyou.info\/userauth\/v1\/auth\//' auth.service.ts
+#      sed -i 's/http:\/\/localhost:3000\/administration\/v1\/owner\//https:\/\/src.virtualyou.info\/administration\/v1\/owner\//' administration.service.ts
 
-      cd src/services # src/src/services
-      sed -i 's/http:\/\/localhost:3000\/userauth\/v1\//https:\/\/src.virtualyou.info\/userauth\/v1\//' user.service.ts
-      sed -i 's/http:\/\/localhost:3000\/personal\/v1\/owner\//https:\/\/src.virtualyou.info\/personal\/v1\/owner\//' personal.service.ts
-      sed -i 's/http:\/\/localhost:3000\/medical\/v1\/owner\//https:\/\/src.virtualyou.info\/medical\/v1\/owner\//' medical.service.ts
-      sed -i 's/http:\/\/localhost:3000\/financial\/v1\/owner\//https:\/\/src.virtualyou.info\/financial\/v1\/owner\//' financial.service.ts
-      sed -i 's/http:\/\/localhost:3000\/userauth\/v1\/auth\//https:\/\/src.virtualyou.info\/userauth\/v1\/auth\//' auth.service.ts
-      sed -i 's/http:\/\/localhost:3000\/administration\/v1\/owner\//https:\/\/src.virtualyou.info\/administration\/v1\/owner\//' administration.service.ts
+      cd $VY_PROJECTS/app/src/utility # src/src/utility
+      sed -i 's/http:\/\/localhost:3000/https:\/\/app.virtualyou.info/' EmailBody.ts
 
-      cd ../utility # src/src/utility
-      sed -i 's/http:\/\/localhost:3000/https:\/\/src.virtualyou.info/' EmailBody.ts
-
-      cd ../.. # src directory
+      cd $VY_PROJECTS/app # src directory
       sed -i 's/http:\/\/localhost:3001/https:\/\/userauth.virtualyou.info/' nginx.conf
       sed -i 's/http:\/\/localhost:3002/https:\/\/personal.virtualyou.info/' nginx.conf
       sed -i 's/http:\/\/localhost:3003/https:\/\/medical.virtualyou.info/' nginx.conf
       sed -i 's/http:\/\/localhost:3004/https:\/\/financial.virtualyou.info/' nginx.conf
       sed -i 's/http:\/\/localhost:3005/https:\/\/administration.virtualyou.info/' nginx.conf
+      sed -i 's/http:\/\/localhost:3006/https:\/\/legal.virtualyou.info/' nginx.conf
+      sed -i 's/http:\/\/localhost:5000/https:\/\/speech.virtualyou.info/' nginx.conf
 
 #      cd $VY_PROJECTS
 #      cd userauth
