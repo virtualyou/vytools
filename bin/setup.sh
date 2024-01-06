@@ -89,45 +89,17 @@ fi
 
 # --------------------------------------------------
 # docker-compose setup
-#
-# This makes a new directory /docker under the proj
-# dir and copies four docker-compose files into
-# the directory for use. Also, this sets the IP for
-# WSL in the compose for "myhost: IP".
-#
-# WARNING: be sure to understand this before using
-#
-# TODO - remove the folder before making the directory
-# TODO - only allow this option with extra -y e.g.
-#
 
 if [[ ${initCompose} == true ]]; then
   echo "BASH_DIR is $BASH_DIR"
   echo "VY_PROJECTS is ${VY_PROJECTS}"
 
-  cd ${VY_PROJECTS}
-  mkdir docker
-  cd docker
-  cp ${VY_PROJECTS}/vymain/docker-compose.yaml .
-  cp ${VY_PROJECTS}/vymain/db.yaml .
-  cp ${VY_PROJECTS}/vymain/api.yaml .
-  cp ${VY_PROJECTS}/vymain/app.yaml .
-
-
-  OLD="$( grep -o -m 1 '[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}' docker-compose.yaml )"
-  echo $OLD
-
-  IP="$( ip route get 8.8.8.8 | grep -oP 'src \K[^ ]+' )"
-  echo $IP
-  STR="s/$OLD/$IP/g"
-  echo $STR
-
-  sed -i $STR ${VY_PROJECTS}/docker/docker-compose.yaml
-  sed -i $STR ${VY_PROJECTS}/docker/api.yaml
-  sed -i $STR ${VY_PROJECTS}/docker/app.yaml
-
-# - "myhost:172.22.227.36"
-# new 172.25.78.22
+  ( set -ex 
+    cd ${VY_PROJECTS}
+    mkdir docker
+    cd docker
+    cp ${VY_PROJECTS}/vymain/docker-compose.yaml .
+  )
 
 fi
 
