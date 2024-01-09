@@ -36,6 +36,7 @@ Options:
     --chk-ver       (EACH << CMD) Get package.json version
     --dclean        (WARNING) Clean all containers then all images (w/prompts)
     --develop-local (SAFE) Base understanding of current Vite application overall
+    --host	    (SAFE) returns host ip
     --pkg-api       (WARNING) Build and package APIs
     --pkg-app       (WARNING) Build and package UI application
     --push-api      (WARNING) Push API images
@@ -77,7 +78,7 @@ while [[ $# -gt 0 && "${1}" =~ ^-- ]]; do
         --pkg-app)      packageApp=true;      noAction=false; shift 1 ;;
         --push-api)     pushApis=true;        noAction=false; shift 1 ;;
         --push-app)     pushApp=true;         noAction=false; shift 1 ;;
-
+	--host)         hostIP=true;          noAction=false; shift 1 ;;
         --test)         testScript=true;      noAction=false; shift 1 ;;
 
         --app-local)    appLocal=true;        noAction=false; shift 1 ;;
