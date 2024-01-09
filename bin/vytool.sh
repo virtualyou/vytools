@@ -31,20 +31,20 @@ Usage:
 
 
 Options:
-    --app-local     (WARNING) Prep for local dist (NGINX) testing
-    --app-prod      (WARNING) Prep for production dist (NGINX) release
     --chk-ver       (EACH << CMD) Get package.json version
     --dclean        (WARNING) Clean all containers then all images (w/prompts)
+<<<<<<< HEAD
     --develop-local (SAFE) Base understanding of current Vite application overall
     --host	    (SAFE) returns host ip
+=======
+    --dev-local     (SAFE) Base understanding of current Vite application overall
+    --dev-api       (EACH << CMD) Comment domain in cookie session
+>>>>>>> 6b61745f570a9eece55cfb4cc9d59e0bdfac5795
     --pkg-api       (WARNING) Build and package APIs
-    --pkg-app       (WARNING) Build and package UI application
+    --prod-api      (EACH << CMD) Uncomment domain in cookie session
     --push-api      (WARNING) Push API images
-    --push-app      (WARNING) Push App image
-    --release-local (WARNING) Release application for local testing (NGINX)
-    --release-prod  (WARNING) Release application for production hosting (NGINX)
-    --test          Testing option
     --set-ver       (EACH << CMD) Set package.json file
+    --test          Testing option
 ENDHELP
     exit
 fi
@@ -71,22 +71,17 @@ noAction=true
 
 while [[ $# -gt 0 && "${1}" =~ ^-- ]]; do
     case "${1}" in
+        --chk-ver)      chkVersion=true;      noAction=false; shift 1 ;;
         --dclean)       dockerClean=true;     noAction=false; shift 1 ;;
-        --chk-ver)      chkVersion=true;       noAction=false; shift 1 ;;
-        --set-ver)      setVersion=true;     noAction=false; shift 1 ;;
+        --dev-api)      devApi=true;          noAction=false; shift 1 ;;
+        --dev-local)    devLocal=true;        noAction=false; shift 1 ;;
         --pkg-api)      packageApis=true;     noAction=false; shift 1 ;;
-        --pkg-app)      packageApp=true;      noAction=false; shift 1 ;;
+        --prod-api)     prodApi=true;         noAction=false; shift 1 ;;
         --push-api)     pushApis=true;        noAction=false; shift 1 ;;
         --push-app)     pushApp=true;         noAction=false; shift 1 ;;
 	--host)         hostIP=true;          noAction=false; shift 1 ;;
+        --set-ver)      setVersion=true;      noAction=false; shift 1 ;;
         --test)         testScript=true;      noAction=false; shift 1 ;;
-
-        --app-local)    appLocal=true;        noAction=false; shift 1 ;;
-        --app-prod)     appProd=true;         noAction=false; shift 1 ;;
-        --develop-local) devLocal=true;       noAction=false; shift 1 ;;
-        --release-local)    relLocal=true;        noAction=false; shift 1 ;;
-        --release-prod)     relProd=true;         noAction=false; shift 1 ;;
-
         *) echo "Unrecognized option:         ${1}" >&2; exit 1 ;;
     esac
 done
@@ -156,7 +151,33 @@ if [[ ${setVersion} == true ]]; then
 fi
 
 # --------------------------------------------------
-# Get version
+# Set API for Local Dev (for EACH << CMD)
+
+if [[ ${devApi} == true ]]; then
+
+  ( set -ex
+    STR="s/domain:/\/\/domain:/g"
+    sed -i $STR src/app.ts
+    grep --color='auto' -ir 'domain:' src/
+  )
+
+fi
+
+# --------------------------------------------------
+# Set API for Prod Hosting (for EACH << CMD)
+
+if [[ ${prodApi} == true ]]; then
+
+  ( set -ex
+    STR="s/\/\/domain:/domain:/g"
+    sed -i $STR src/app.ts
+    grep --color='auto' -ir 'domain:' src/
+  )
+
+fi
+
+# --------------------------------------------------
+# Check Versions (for EACH << CMD)
 
 if [[ ${chkVersion} == true ]]; then
 
@@ -197,6 +218,9 @@ if [[ ${packageApis} == true ]]; then
     docker build -t dlwhitehurst/administration:"$BUILD_VERSION" .
     cd "$VY_PROJECTS"/legal
     docker build -t dlwhitehurst/legal:"$BUILD_VERSION" .
+    cd "$VY_PROJECTS"/notification
+    docker build -t dlwhitehurst/notification:"$BUILD_VERSION" .
+   
   )
 fi
 
@@ -219,6 +243,8 @@ if [[ ${pushApis} == true ]]; then
     docker push dlwhitehurst/administration:"$BUILD_VERSION"
     cd "$VY_PROJECTS"/legal
     docker push dlwhitehurst/legal:"$BUILD_VERSION"
+    cd "$VY_PROJECTS"/notification
+    docker push dlwhitehurst/notification:"$BUILD_VERSION"
   )
 fi
 
@@ -226,31 +252,6 @@ fi
 # Test Script
 if [[ ${testScript} == true ]]; then
   echo "$VY_PROJECTS"
-fi
-
-# --------------------------------------------------
-# App package
-if [[ ${packageApp} == true ]]; then
-  if [ -z "$BUILD_VERSION" ]; then
-      echo "ERROR: BUILD_VERSION is not set"
-      exit 1
-  fi
-
-fi
-
-# --------------------------------------------------
-# Prepare App for Local (NGINX)
-if [[ ${appLocal} == true ]]; then
-  echo "Local dist configuration (NGINX)"
-  OLD="$( grep -o -m 1 '[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}' "${VY_PROJECTS}"/app/nginx.conf )"
-  echo "$OLD"
-
-  IP="$( ip route get 8.8.8.8 | grep -oP 'src \K[^ ]+' )"
-  echo "$IP"
-  STR="s/$OLD/$IP/g"
-  echo "$STR"
-
-  sed -i "$STR" "${VY_PROJECTS}"/app/nginx.conf
 fi
 
 # --------------------------------------------------
@@ -276,74 +277,3 @@ if [[ ${devLocal} == true ]]; then
     cat vite.config.ts
 fi
 
-# --------------------------------------------------
-# Release Local
-if [[ ${relLocal} == true ]]; then
-    if [ -z "$BUILD_VERSION" ]; then
-        echo "ERROR: BUILD_VERSION is not set"
-        exit 1
-    fi
-
-    PROXY="$(grep -m 1 proxy_pass "${VY_PROJECTS}"/app/nginx.conf | awk '{print $2}')"
-
-    echo "Pre-Release Checklist: "
-    echo "  - nginx configuration shows $PROXY"
-    if [ -e "${VY_PROJECTS}"/app/.env ]; then
-      BASEPATH="$(grep VITE_APP_BASEPATH .env | awk -F= '{print $2}')"
-      echo "  - .env file exists and basepath = $BASEPATH"
-    else
-      echo "  - .env file does not exist"
-    fi
-    echo
-    # Prompt the user for confirmation
-    read -p "Do you want to proceed? (y/n) " choice
-
-    # Check the user's response
-    case "$choice" in
-      y|Y ) echo "Building, packaging, tagging, and pushing version $BUILD_VERSION for local testing (NGINX).";;
-      n|N ) echo "Exiting..."; exit;;
-      * ) echo "Invalid response"; exit;;
-    esac
-
-    # Point of NO RETURN
-    ( # set -ex
-      cd "${VY_PROJECTS}"/app
-      rm -rf dist
-      npm run build
-    # Check if command failed
-      if [ $? -ne 0 ]; then
-        echo "ERROR: Something failed, consider set -ex and run again."
-        exit;
-      fi
-
-      docker build -t dlwhitehurst/app:$BUILD_VERSION .
-      # Check if command failed
-      if [ $? -ne 0 ]; then
-        echo "ERROR: Something failed, consider set -ex and run again."
-        exit;
-      fi
-
-      docker push dlwhitehurst/app:"$BUILD_VERSION"
-      # Check if command failed
-      if [ $? -ne 0 ]; then
-        echo "ERROR: Something failed, consider set -ex and run again."
-        exit;
-      fi
-
-      echo "SUCCESS: dlwhitehurst/app:$BUILD_VERSION now resides at https://hub.docker.com/dlwhitehurst."
-    )
-
-
-fi
-
-# --------------------------------------------------
-# Prepare App for Prod (NGINX)
-if [[ ${appProd} == true ]]; then
-  echo "Production dist prep (NGINX)"
-fi
-
-# --------------------------------------------------
-# Release Prod
-if [[ ${relProd} == true ]]; then
-  echo "Production dist release (NGINX)"
-fi
