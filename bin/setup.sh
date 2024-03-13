@@ -3,7 +3,7 @@
 # WARNING: USE AT YOUR OWN RISK, WORK IN PROGRESS, REVIEW BEFORE YOU RUN.
 #
 # VirtualYou Project
-# Copyright 2023 David L Whitehurst
+# Copyright 2023,2024 David L Whitehurst
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -36,9 +36,13 @@ Options:
     --shell       Initialize shell environment variables (bash only)
     --utils       Clone the VirtualYou utilities
     --compose     Get docker-compose and setup in isolation
+
     --apis        Clone the api repos
     --app         Clone the current UI application
-    --site	  Clone the website
+    --site	      Clone the website
+
+    --del-apis    Delete the APIs
+    --del-app     Delete the Application
 ENDHELP
     exit
 fi
@@ -65,6 +69,9 @@ while [[ $# -gt 0 && "${1}" =~ ^-- ]]; do
         --compose)    initCompose=true;   noAction=false; shift 1 ;;
         --apis)       cloneApis=true;     noAction=false; shift 1 ;;
         --app)        cloneApp=true;      noAction=false; shift 1 ;;
+        --del-apis)   delApis=true;       noAction=false; shift 1 ;;
+        --del-app)    delApp=true;        noAction=false; shift 1 ;;
+
         --site)       cloneSite=true;     noAction=false; shift 1 ;;
             *) echo "Unrecognized option: ${1}" >&2; exit 1 ;;
     esac
@@ -104,7 +111,7 @@ if [[ ${initCompose} == true ]]; then
 fi
 
 # --------------------------------------------------
-# repo cloning
+# clone utils
 
 if [[ ${cloneUtils} == true ]]; then
     cd $VY_PROJECTS
@@ -114,6 +121,9 @@ if [[ ${cloneUtils} == true ]]; then
       git clone -b main     git@github.com:virtualyou/vydata.git
     )
 fi
+
+# --------------------------------------------------
+# clone apis
 
 if [[ ${cloneApis} == true ]]; then
     cd $VY_PROJECTS
@@ -126,8 +136,13 @@ if [[ ${cloneApis} == true ]]; then
       git clone -b main     git@github.com:virtualyou/legal.git
       git clone -b main     git@github.com:virtualyou/notification.git
       git clone -b main     git@github.com:virtualyou/speech.git
+      git clone -b main     git@github.com:virtualyou/business.git
+
     )
 fi
+
+# --------------------------------------------------
+# clone app
 
 if [[ ${cloneApp} == true ]]; then
     cd $VY_PROJECTS
@@ -143,3 +158,30 @@ if [[ ${cloneSite} == true ]]; then
     )
 fi
 
+# --------------------------------------------------
+# delete apis
+
+if [[ ${delApis} == true ]]; then
+    cd $VY_PROJECTS
+    ( set -ex
+      rm -rf userauth
+      rm -rf personal
+      rm -rf medical
+      rm -rf financial
+      rm -rf administration
+      rm -rf notification
+      rm -rf legal
+      rm -rf speech
+      rm -rf business
+    )
+fi
+
+# --------------------------------------------------
+# delete app
+
+if [[ ${delApp} == true ]]; then
+    cd $VY_PROJECTS
+    ( set -ex
+      rm -rf app
+    )
+fi
