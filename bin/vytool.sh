@@ -32,17 +32,16 @@ Usage:
 
 Options:
     --chk-ver       (EACH << CMD) Get package.json version
+    --chk-domain    (EACH << CMD) Get domain line src/app.ts
+
     --dclean        (WARNING) Clean all containers then all images (w/prompts)
-<<<<<<< HEAD
-    --develop-local (SAFE) Base understanding of current Vite application overall
-    --host	    (SAFE) returns host ip
-=======
-    --dev-local     (SAFE) Base understanding of current Vite application overall
+
     --dev-api       (EACH << CMD) Comment domain in cookie session
->>>>>>> 6b61745f570a9eece55cfb4cc9d59e0bdfac5795
-    --pkg-api       (WARNING) Build and package APIs
     --prod-api      (EACH << CMD) Uncomment domain in cookie session
+
+    --pkg-api       (WARNING) Build and package APIs
     --push-api      (WARNING) Push API images
+
     --set-ver       (EACH << CMD) Set package.json file
     --test          Testing option
 ENDHELP
@@ -72,14 +71,13 @@ noAction=true
 while [[ $# -gt 0 && "${1}" =~ ^-- ]]; do
     case "${1}" in
         --chk-ver)      chkVersion=true;      noAction=false; shift 1 ;;
+        --chk-domain)   chkDomain=true;       noAction=false; shift 1 ;;
         --dclean)       dockerClean=true;     noAction=false; shift 1 ;;
         --dev-api)      devApi=true;          noAction=false; shift 1 ;;
-        --dev-local)    devLocal=true;        noAction=false; shift 1 ;;
         --pkg-api)      packageApis=true;     noAction=false; shift 1 ;;
         --prod-api)     prodApi=true;         noAction=false; shift 1 ;;
         --push-api)     pushApis=true;        noAction=false; shift 1 ;;
         --push-app)     pushApp=true;         noAction=false; shift 1 ;;
-	--host)         hostIP=true;          noAction=false; shift 1 ;;
         --set-ver)      setVersion=true;      noAction=false; shift 1 ;;
         --test)         testScript=true;      noAction=false; shift 1 ;;
         *) echo "Unrecognized option:         ${1}" >&2; exit 1 ;;
@@ -196,6 +194,19 @@ if [[ ${chkVersion} == true ]]; then
 fi
 
 # --------------------------------------------------
+# Check Domain (for EACH << CMD)
+
+if [[ ${chkDomain} == true ]]; then
+
+    if [ -e ./src/app.ts ]; then
+      ( #set -ex
+        LINE="$(grep domain src/app.ts)"
+        echo -e "$LINE"
+      )
+    fi
+fi
+
+# --------------------------------------------------
 # API packages
 
 if [[ ${packageApis} == true ]]; then
@@ -254,26 +265,6 @@ if [[ ${testScript} == true ]]; then
   echo "$VY_PROJECTS"
 fi
 
-# --------------------------------------------------
-# Develop Local
-if [[ ${devLocal} == true ]]; then
 
-  GREEN='\033[0;32m'
-  NC='\033[0m' # No Color
 
-    cd "${VY_PROJECTS}/app"
-    echo "Pre-Develop Checklist: "
-    echo -e "${GREEN}  - status repo.${NC}"
-    git status
-    echo -e "${GREEN}  - pull from remote.${NC}"
-    git pull
-    echo -e "${GREEN}  - cat env file.${NC}"
-    if [ -e "${VY_PROJECTS}"/app/.env ]; then
-      cat .env
-    else
-      echo -e "${GREEN}  - env file does not exist.${NC}"
-    fi
-    echo -e "${GREEN}  - cat Vite dev server configuration.${NC}"
-    cat vite.config.ts
-fi
 
